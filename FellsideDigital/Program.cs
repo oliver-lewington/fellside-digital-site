@@ -1,4 +1,4 @@
-using FellsideDigital.Components;
+﻿using FellsideDigital.Components;
 using FellsideDigital.Components.Account;
 using FellsideDigital.Data;
 using Microsoft.AspNetCore.Components.Authorization;
@@ -51,10 +51,13 @@ else
 
 app.UseHttpsRedirection();
 
+app.UseStatusCodePagesWithReExecute("/not-found");
 
 app.UseAntiforgery();
 
 app.MapStaticAssets();
+
+
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode();
 

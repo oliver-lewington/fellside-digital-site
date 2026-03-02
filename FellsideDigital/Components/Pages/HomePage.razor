@@ -1,0 +1,163 @@
+﻿@page "/"
+@using FellsideDigital.Components.Shared
+@inherits PageBase
+@inject IJSRuntime JS
+@inject NavigationManager NavigationManager
+
+<PageTitle>Fellside Digital — Custom Web & Software Systems</PageTitle>
+
+<HeadContent>
+    <link rel="stylesheet" href="@Assets["css/homepage.css"]" />
+</HeadContent>
+
+    <div class="page-wrapper">
+
+    <div class="grain-overlay" aria-hidden="true"></div>
+
+    <div class="bg-neutral-950 text-neutral-100 font-sans relative">
+
+        <!-- HERO -->
+        <section class="min-h-screen flex items-center justify-center px-6 relative overflow-hidden">
+            <div class="hero-glow" aria-hidden="true"></div>
+
+                <div id="auth-links" class="animated absolute top-6 right-6 text-sm text-neutral-400 space-x-4">
+                <a href="/login" class="hover:text-accent transition">Existing customer login</a>
+                <span class="text-neutral-600">|</span>
+                <a href="/admin" class="hover:text-accent transition">Admin login</a>
+            </div>
+
+            <div class="max-w-3xl text-center space-y-6 relative z-10">
+                <h1 id="hero-heading" class="animated text-5xl md:text-6xl font-bold tracking-tight leading-tight">
+                    Custom software <span class="text-accent">built with intent</span>
+                </h1>
+                <p id="hero-sub" class="animated text-neutral-400 text-lg">
+                    Fellside Digital designs and builds reliable web applications and
+                    digital systems for organisations that value clarity, performance, and
+                    long-term quality.
+                </p>
+                <div id="hero-cta" class="animated pt-8 space-y-4">
+                    <p class="text-sm uppercase tracking-widest text-neutral-500">
+                        Based in Cumbria · Working UK-wide
+                    </p>
+                    <button class="mx-auto flex items-center gap-2 text-neutral-400 hover:text-accent transition text-sm tracking-widest uppercase"
+                            @onclick="ScrollToOfferings">
+                        <span class="scroll-arrow">↓</span> Explore what we build
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- OFFERINGS -->
+        <section id="offerings" class="py-32 px-6">
+            <div class="max-w-6xl mx-auto">
+                <div class="text-center mb-16">
+                    <h2 id="offerings-title" class="animated text-4xl font-semibold inline-block">What we build</h2>
+                    <span class="section-underline" id="offerings-underline"></span>
+                </div>
+                <div class="grid md:grid-cols-3 gap-8" id="offerings-cards">
+                    @foreach (var item in offerings)
+                    {
+                        <div class="offering-card scroll-card card bg-neutral-900 border border-neutral-800 rounded-2xl p-8 relative overflow-hidden"
+                             tabindex="0"
+                             @onclick="() => OnCardClick(item.Link)">
+                            <span class="ripple"></span>
+                            <h3 class="text-2xl font-semibold mb-4">@item.Title</h3>
+                            <p class="text-neutral-400 mb-6">@item.Description</p>
+                            <p class="text-3xl font-bold mb-6">@item.Price</p>
+                            <ul class="text-sm text-neutral-400 space-y-2 mb-8">
+                                @foreach (var feature in item.Features)
+                                {
+                                    <li>✓ @feature</li>
+                                }
+                            </ul>
+                            <span class="text-accent font-medium">Explore this option →</span>
+                        </div>
+                    }
+                </div>
+            </div>
+        </section>
+
+        <!-- WHY -->
+        <section class="py-32 px-6 bg-neutral-900">
+            <div class="max-w-4xl mx-auto text-center space-y-12">
+                <div>
+                    <h2 class="text-4xl font-semibold inline-block">Built properly, from the ground up</h2>
+                </div>
+                <p class="text-neutral-400 text-lg">
+                    We take a considered, engineering-led approach to every project. That
+                    means no bloated tooling, no unnecessary abstraction — just dependable
+                    software that does exactly what it needs to do.
+                </p>
+                <div id="why-pillars" class="grid md:grid-cols-3 gap-8 text-left">
+                    <div class="pillar">
+                        <h3 class="font-semibold mb-2">Clear design</h3>
+                        <p class="text-neutral-400 text-sm">Interfaces that are calm, usable, and purposeful.</p>
+                    </div>
+                    <div class="pillar">
+                        <h3 class="font-semibold mb-2">Performance-first</h3>
+                        <p class="text-neutral-400 text-sm">Fast, efficient systems built with long-term maintainability in mind.</p>
+                    </div>
+                    <div class="pillar">
+                        <h3 class="font-semibold mb-2">Built to last</h3>
+                        <p class="text-neutral-400 text-sm">Software that supports your business today and adapts tomorrow.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </div>
+    </div>
+
+    <LoadingScreen @ref="Loader" />   @* ← no IsVisible, loader owns its own state *@
+
+
+@code {
+    private List<Offering> offerings = new()
+    {
+        new Offering("Foundational Websites",
+            "Clean, fast, well-engineered websites for organisations that need a professional presence without unnecessary complexity.",
+            "From £450", new[] { "1–3 page builds", "Mobile-first", "SEO-ready", "High performance" }, "/foundational"),
+        new Offering("Software-Driven Websites",
+            "More advanced builds with dynamic content, and maintainable architectures designed to evolve with your business.",
+            "Project-based", new[] { "CMS & content modelling", "Integrations & APIs", "Analytics & monitoring", "Scalable foundations" }, "/software"),
+        new Offering("Bespoke Software Systems",
+            "Fully custom applications and internal systems built around your workflows, data, and long-term operational needs.",
+            "Custom", new[] { "Architecture & system design", "Backend & API development", "Performance & reliability", "Ongoing support" }, "/bespoke")
+    };
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender) return;
+        // Any async data fetching would go here before FinishLoading()
+
+        // Dismiss the loader — page becomes visible
+        await FinishLoading();
+
+        await JS.InvokeVoidAsync("fellsideScroll.init");
+
+        // ── HERO SEQUENCE ──────────────────────────────────────
+        await JS.InvokeVoidAsync("fellsideAnime.fadeUp", "#auth-links",    new { distance = -16, duration = 600, startDelay = 200 });
+        await JS.InvokeVoidAsync("fellsideAnime.blurClear", "#hero-heading", new { duration = 1000, stagger = 80, distance = 12, startDelay = 150 });
+        await JS.InvokeVoidAsync("fellsideAnime.fadeInWords", "#hero-sub",  new { distance = 24, duration = 700, stagger = 60, startDelay = 900 });
+        await JS.InvokeVoidAsync("fellsideAnime.fadeUp", "#hero-cta",       new { distance = 20, duration = 600, startDelay = 1400 });
+
+        // ── OFFERINGS SEQUENCE ─────────────────────────────────
+        await JS.InvokeVoidAsync("fellsideAnime.flipInWordsOnScroll", "#offerings-title",   new { duration = 700, stagger = 120 });
+        await JS.InvokeVoidAsync("fellsideAnime.drawUnderline", "#offerings-underline",     new { duration = 600, startDelay = 1000 });
+        await JS.InvokeVoidAsync("fellsideAnime.zoomInOnScroll", "#offerings-cards > div", new { from = 0.90, duration = 700, stagger = 150 });
+
+        // ── WHY PILLARS ────────────────────────────────────────
+        await JS.InvokeVoidAsync("fellsideAnime.elasticPopOnScroll", "#why-pillars > div", new { stagger = 120, startDelay = 100 });
+    }
+
+    private async Task OnCardClick(string link)
+    {
+        await Task.Delay(800);
+        NavigationManager.NavigateTo(link);
+    }
+
+    private async Task ScrollToOfferings() =>
+        await JS.InvokeVoidAsync("fellsideScroll.toOfferings", "offerings");
+
+    public record Offering(string Title, string Description, string Price, string[] Features, string Link);
+}

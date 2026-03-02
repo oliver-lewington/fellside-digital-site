@@ -1,0 +1,68 @@
+﻿@page "/not-found"
+@inject IJSRuntime JS
+
+<PageTitle>404 — Fellside Digital</PageTitle>
+<HeadContent>
+    <link rel="stylesheet" href="@Assets["css/error-page.css"]" />
+</HeadContent>
+
+<div class="grid-bg" aria-hidden="true"></div>
+<div class="four-glow" aria-hidden="true"></div>
+
+<div class="relative z-10 h-full flex flex-col items-center justify-center px-6 text-center">
+    <div class="space-y-8 max-w-lg w-full">
+
+        <div id="four-oh-four" class="four-oh-four animated">404</div>
+
+        <div>
+            <h2 id="not-found-title" class="animated text-2xl md:text-3xl font-semibold text-neutral-200 tracking-tight">
+                Page not found
+            </h2>
+            <span class="title-underline" id="title-underline"></span>
+        </div>
+
+        <div class="h-px w-24 mx-auto bg-neutral-800"></div>
+
+        <p id="not-found-body" class="animated text-neutral-500 text-base leading-relaxed max-w-sm mx-auto">
+            The page you're looking for doesn't exist or may have been moved.
+            Check the URL or head back home.
+        </p>
+
+        <div id="not-found-cta" class="animated">
+            <a href="/" class="home-btn">
+                <span>←</span> Back to homepage
+            </a>
+        </div>
+
+        <p id="not-found-hint" class="animated text-xs text-neutral-700 tracking-widest uppercase">
+            Error 404 · Page not found
+        </p>
+
+    </div>
+</div>
+
+@code {
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender) return;
+
+
+        await JS.InvokeVoidAsync("fellsideAnime.charsRainDown", "#four-oh-four",
+            new { distance = -80, rotate = -12, duration = 700, stagger = 80, startDelay = 100 });
+
+        await JS.InvokeVoidAsync("fellsideAnime.fadeInWords", "#not-found-title",
+            new { distance = 28, duration = 650, stagger = 90, startDelay = 700 });
+
+        await JS.InvokeVoidAsync("fellsideAnime.drawUnderline", "#title-underline",
+            new { duration = 500, startDelay = 1200 });
+
+        await JS.InvokeVoidAsync("fellsideAnime.fadeUp", "#not-found-body",
+            new { distance = 20, duration = 600, startDelay = 1000 });
+
+        await JS.InvokeVoidAsync("fellsideAnime.elasticPop", "#not-found-cta",
+            new { startDelay = 1400 });
+
+        await JS.InvokeVoidAsync("fellsideAnime.fadeUp", "#not-found-hint",
+            new { distance = 10, duration = 500, startDelay = 1800 });
+    }
+    }

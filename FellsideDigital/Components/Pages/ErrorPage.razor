@@ -1,0 +1,149 @@
+﻿@page "/Error"
+@using System.Diagnostics
+@inject IJSRuntime JS
+
+<PageTitle>Error — Fellside Digital</PageTitle>
+
+<HeadContent>
+    <link rel="stylesheet" href="@Assets["css/error-page.css"]" />
+</HeadContent>
+
+<!-- Background effects -->
+<div class="scanlines fixed inset-0 z-0 pointer-events-none" aria-hidden="true"></div>
+
+<div class="ghost-code fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2
+            font-black tracking-tighter pointer-events-none select-none z-0 whitespace-nowrap"
+     aria-hidden="true">ERR</div>
+
+<div class="error-glow-blob fixed top-[30%] left-1/2 -translate-x-1/2
+            w-[500px] h-[500px] rounded-full blur-[60px] pointer-events-none z-0"
+     aria-hidden="true"></div>
+
+<!-- Page content -->
+<div class="relative z-10 flex items-center justify-center px-6 py-24">
+    <div class="max-w-2xl w-full space-y-10">
+
+        <!-- Badge -->
+        <div id="err-badge" class="animated">
+            <span class="inline-flex items-center gap-2
+                         border border-red-500/30 bg-red-500/8 text-red-300
+                         text-[0.7rem] tracking-[0.15em] uppercase px-[14px] py-[6px] rounded-full">
+                <span id="status-dot" class="w-2 h-2 rounded-full bg-red-500 inline-block"></span>
+                System exception detected
+            </span>
+        </div>
+
+        <!-- Title -->
+        <div class="space-y-2">
+            <h1 id="err-title"
+                class="animated text-6xl md:text-7xl font-black tracking-tight text-red-500 leading-none">
+                Error.
+            </h1>
+            <div id="err-divider" class="error-divider h-px"></div>
+        </div>
+
+        <!-- Subtitle -->
+        <h2 id="err-subtitle" class="animated text-xl text-neutral-300 font-light leading-relaxed">
+            An error occurred while processing your request.
+        </h2>
+
+        <!-- Request ID -->
+        @if (ShowRequestId)
+        {
+            <div id="err-request" class="animated flex items-center gap-3 text-sm text-neutral-400">
+                <span>Request ID</span>
+                <code class="font-mono text-[0.8rem] bg-red-500/8 border border-red-500/20
+                             text-red-300 px-[10px] py-[2px] rounded-md">@RequestId</code>
+            </div>
+        }
+
+        <!-- Info cards -->
+        <div id="err-info" class="space-y-4">
+
+            <div class="animated border border-red-500/12 bg-red-500/3 rounded-xl px-6 py-5">
+                <h3 class="text-xs font-semibold text-red-400 uppercase tracking-widest mb-2">
+                    Development Mode
+                </h3>
+                <p class="text-neutral-400 text-sm leading-relaxed">
+                    Swapping to <strong class="text-neutral-200">Development</strong> environment will display
+                    more detailed information about the error that occurred.
+                </p>
+            </div>
+
+            <div class="animated border border-red-500/12 bg-red-500/3 rounded-xl px-6 py-5">
+                <h3 class="text-xs font-semibold text-amber-500 uppercase tracking-widest mb-2">
+                    ⚠ Security Notice
+                </h3>
+                <p class="text-neutral-400 text-sm leading-relaxed">
+                    The Development environment <strong class="text-neutral-200">shouldn't be enabled
+                    for deployed applications</strong> — it can expose sensitive exception details to end users.
+                </p>
+            </div>
+
+            <div class="animated border border-red-500/12 bg-red-500/3 rounded-xl px-6 py-5">
+                <h3 class="text-xs font-semibold text-neutral-400 uppercase tracking-widest mb-2">
+                    How to enable locally
+                </h3>
+                <p class="text-neutral-400 text-sm leading-relaxed">
+                    Set the
+                    <code class="font-mono text-[0.8rem] bg-red-500/8 border border-red-500/20
+                                 text-red-300 px-[10px] py-[2px] rounded-md">ASPNETCORE_ENVIRONMENT</code>
+                    variable to
+                    <code class="font-mono text-[0.8rem] bg-red-500/8 border border-red-500/20
+                                 text-red-300 px-[10px] py-[2px] rounded-md">Development</code>
+                    and restart the application.
+                </p>
+            </div>
+
+        </div>
+
+        <!-- Back link -->
+        <div id="err-back" class="animated">
+            <a href="/"
+               class="inline-flex items-center gap-2 text-sm text-neutral-500
+                      hover:text-red-400 transition-colors duration-200 group">
+                <span class="inline-block group-hover:-translate-x-1 transition-transform duration-200">←</span>
+                Return to homepage
+            </a>
+        </div>
+
+    </div>
+</div>
+
+@code {
+    [CascadingParameter] private HttpContext? HttpContext { get; set; }
+    private string? RequestId { get; set; }
+    private bool ShowRequestId => !string.IsNullOrEmpty(RequestId);
+
+    protected override void OnInitialized() =>
+        RequestId = Activity.Current?.Id ?? HttpContext?.TraceIdentifier;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender) return;
+
+        await JS.InvokeVoidAsync("fellsideAnime.fadeUp", "#err-badge",
+            new { distance = 20, duration = 500, startDelay = 50 });
+
+        await JS.InvokeVoidAsync("fellsideAnime.pulse", "#status-dot",
+            new { scale = 1.5, duration = 700 });
+
+        await JS.InvokeVoidAsync("fellsideAnime.scrambleText", "#err-title",
+            new { duration = 1000, steps = 20, startDelay = 300 });
+
+        await JS.InvokeVoidAsync("fellsideAnime.drawUnderline", "#err-divider",
+            new { duration = 700, startDelay = 900 });
+
+        await JS.InvokeVoidAsync("fellsideAnime.typewriter", "#err-subtitle",
+            new { speed = 30, jitter = 15, showCursor = true, cursorDuration = 1500, startDelay = 800 });
+
+        await JS.InvokeVoidAsync("fellsideAnime.fadeUp", "#err-request",
+            new { distance = 12, duration = 500, startDelay = 1600 });
+
+        await JS.InvokeVoidAsync("fellsideAnime.staggeredReveal", "#err-info",
+            new { distance = 20, duration = 600, stagger = 130, startDelay = 1400 });
+
+        await JS.InvokeVoidAsync("fellsideAnime.elasticPop", "#err-back",
+            new { startDelay = 2000 });
+    }
+}
