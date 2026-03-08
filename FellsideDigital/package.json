@@ -1,0 +1,26 @@
+{
+  "name": "fellside-digital-ui",
+  "version": "1.0.0",
+  "description": "Applicaiton for Fellside Digital",
+  "homepage": "https://github.com/Oliver-Lewington-Atos/fellside-digital-site#readme",
+  "bugs": {
+    "url": "https://github.com/Oliver-Lewington-Atos/fellside-digital-site/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Oliver-Lewington-Atos/fellside-digital-site.git"
+  },
+  "license": "MIT",
+  "author": "",
+  "type": "commonjs",
+  "main": "index.js",
+  "scripts": {
+    "tailwind:watch": "tailwindcss -i ./Styles/tailwind.css -o ./wwwroot/css/tailwind.css --watch",
+    "tailwind:build": "NODE_ENV=production tailwindcss -i ./Styles/tailwind.css -o ./wwwroot/css/tailwind.css --minify"
+  },
+  "dependencies": {
+    "@tailwindcss/cli": "^4.2.1",
+    "@tailwindplus/elements": "^1.0.22",
+    "tailwindcss": "^4.2.1"
+  }
+}

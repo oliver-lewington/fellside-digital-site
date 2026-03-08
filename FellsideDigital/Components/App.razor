@@ -5,42 +5,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <base href="/" />
     <link rel="stylesheet" href="@Assets["css/app.css"]" />
-    <link rel="stylesheet" href="@Assets["css/site.css"]" />
+    <link rel="stylesheet" href="@Assets["css/tailwind.css"]" />
     <link rel="stylesheet" href="@Assets["FellsideDigital.styles.css"]" />
     <ImportMap />
     <link rel="icon" type="image/png" href="favicon.png" />
 
-    <!--
-        Scripts in <head> ensure they are fully loaded and window.* objects
-        exist BEFORE Blazor's SignalR connection fires OnAfterRenderAsync.
-        anime.js must come before animeInterop.js so it is available when
-        the wrapper script runs.
-    -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.2/anime.min.js"></script>
-    <script src="@Assets["js/site.js"]"></script>
     <script src="@Assets["js/animations/anime-interop.js"]"></script>
     <script src="@Assets["js/animations/app-loader.js"]"></script>
 
-    <!-- Tailwind CDN + config -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        accent: "#6366f1",
-                    },
-                },
-            },
-        };
-    </script>
-
-    <!-- Scramble scroll trigger helper -->
-    <script>
-        function triggerScramble() {
-                    fellsideAnime.scrambleText('#e4-heading', { duration: 1200, steps: 18 });
-                }
-    </script>
+    <script src="@Assets["js/app.js"]"></script>
 
     <HeadOutlet />
 </head>
