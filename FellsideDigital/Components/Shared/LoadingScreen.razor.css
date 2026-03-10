@@ -1,4 +1,29 @@
-﻿.app-loader {
+﻿/* ---------------- LIGHT MODE OVERRIDES ---------------- */
+
+/* when the page is NOT dark */
+:root:not(.dark) .app-loader {
+    background: #ffffff;
+}
+
+:root:not(.dark) .loader-title {
+    color: #111827;
+}
+
+:root:not(.dark) .loader-bar {
+    background: rgba(0,0,0,0.1);
+}
+
+:root:not(.dark) .loader-glow {
+    background: radial-gradient(circle, rgba(99,102,241,0.10) 0%, transparent 70%);
+}
+
+/* grain slightly darker so it remains visible */
+:root:not(.dark) .grain-overlay {
+    opacity: 0.05;
+}
+
+
+.app-loader {
     position: fixed;
     inset: 0;
     width: 100%;

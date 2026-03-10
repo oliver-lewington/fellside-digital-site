@@ -3,3 +3,5 @@
 @theme {
     --color-accent: #6366f1;
 }
+
+@variant dark (&:where(.dark, .dark *));

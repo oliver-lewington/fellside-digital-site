@@ -1,0 +1,99 @@
+﻿/* ── Grid background ── */
+.grid-bg {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    background-image: linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
+    background-size: 60px 60px;
+    mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black 40%, transparent 100%);
+}
+
+/* ── Ambient glow ── */
+.four-glow {
+    position: fixed;
+    top: 40%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 600px;
+    height: 600px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(99, 102, 241, 0.07) 0%, transparent 70%);
+    filter: blur(60px);
+    pointer-events: none;
+    z-index: 0;
+    animation: glow-breathe 5s ease-in-out infinite alternate;
+}
+
+@keyframes glow-breathe {
+    0% {
+        opacity: 0.5;
+        transform: translate(-50%, -50%) scale(1);
+    }
+
+    100% {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1.15);
+    }
+}
+
+/* ── Giant ghost 404 ── */
+.four-oh-four {
+    font-size: clamp(100px, 20vw, 220px);
+    font-weight: 900;
+    letter-spacing: -0.04em;
+    line-height: 1;
+    background: linear-gradient(135deg, #e2e8f0 0%, #64748b 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+/* ── Underline draw ── */
+.title-underline {
+    display: block;
+    height: 1px;
+    margin-top: 10px;
+    background: linear-gradient(90deg, transparent, rgba(99, 102, 241, 0.5), transparent);
+    width: 0%;
+    opacity: 0;
+}
+
+/* ── CTA button ── */
+.home-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 28px;
+    border-radius: 999px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.04);
+    color: #a1a1aa;
+    font-size: 0.875rem;
+    letter-spacing: 0.05em;
+    transition: all 0.2s ease;
+    text-decoration: none;
+}
+
+    .home-btn:hover {
+        border-color: rgba(99, 102, 241, 0.4);
+        background: rgba(99, 102, 241, 0.08);
+        color: #e2e8f0;
+    }
+
+/* ── Particles — fixed so % values are relative to viewport ── */
+.particle {
+    position: fixed;
+    border-radius: 50%;
+    background: rgba(99, 102, 241, 0.4);
+    pointer-events: none;
+    z-index: 1;
+    box-shadow: 0 0 6px rgba(99, 102, 241, 0.3);
+}
+
+/* ── Error page divider ── */
+.error-divider {
+    background: linear-gradient(90deg, transparent, rgba(239, 68, 68, 0.3), transparent);
+    width: 0%;
+    opacity: 0;
+}

@@ -14,8 +14,19 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<Watch Include="./Styles/tailwind.css"/>
+		<Watch Include="./Styles/tailwind.css" />
 	</ItemGroup>
+
+	<Target Name="CheckNodeInstalled" BeforeTargets="Compile">
+		<Exec Command="node --version" IgnoreExitCode="true">
+			<Output TaskParameter="ExitCode" PropertyName="NodeExitCode" />
+		</Exec>
+		<Error Condition="'$(NodeExitCode)' != '0'" Text="Node.js is required to build this project. Install it from https://nodejs.org/." />
+	</Target>
+
+	<Target Name="NpmInstall" BeforeTargets="Compile">
+		<Exec Command="npm install" />
+	</Target>
 
 	<Target Name="Tailwind" BeforeTargets="Compile">
 		<Exec Command="npx tailwindcss -i ./Styles/tailwind.css -o ./wwwroot/css/tailwind.css" />

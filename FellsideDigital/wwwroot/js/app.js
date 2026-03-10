@@ -107,3 +107,14 @@ window.fellsideScroll = (() => {
     };
 
 })();
+
+window.fellsideTheme = {
+    init() {
+        const s = localStorage.getItem('fellside-theme') ?? 'dark';
+        document.documentElement.classList.toggle('dark', s === 'dark');
+    },
+    toggle() {
+        const isDark = document.documentElement.classList.toggle('dark');
+        localStorage.setItem('fellside-theme', isDark ? 'dark' : 'light');
+    }
+};

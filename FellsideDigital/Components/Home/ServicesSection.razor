@@ -1,0 +1,44 @@
+@using FellsideDigital.Components.Home
+
+<section id="services"
+         class="py-32 px-6 bg-slate-50 dark:bg-neutral-950 transition-colors duration-300">
+    <div class="max-w-7xl mx-auto space-y-16">
+
+        <div>
+            <p id="services-label"
+               class="animated text-sm font-medium uppercase tracking-widest
+                      text-slate-400 dark:text-neutral-500">
+                Services
+            </p>
+            <h2 id="services-heading"
+                class="animated mt-2 text-3xl font-semibold
+                       text-slate-900 dark:text-neutral-100">
+                We take care of everything.
+            </h2>
+        </div>
+
+        <div id="services-grid" class="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            @foreach (var svc in HomeData.Services)
+            {
+                <div class="group rounded-2xl p-6 space-y-4
+                            bg-white ring-1 ring-slate-200
+                            dark:bg-neutral-900 dark:ring-white/5
+                            hover:ring-accent/40 hover:shadow-md
+                            transition-all duration-200">
+                    <div class="w-10 h-10 rounded-xl flex items-center justify-center
+                                bg-accent/10 text-accent
+                                group-hover:bg-accent/20 transition-colors">
+                        @((MarkupString)svc.IconSvg)
+                    </div>
+                    <h3 class="font-semibold text-slate-900 dark:text-neutral-100">
+                        @svc.Title
+                    </h3>
+                    <p class="text-sm leading-relaxed text-slate-500 dark:text-neutral-400">
+                        @svc.Description
+                    </p>
+                </div>
+            }
+        </div>
+
+    </div>
+</section>

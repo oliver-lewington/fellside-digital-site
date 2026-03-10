@@ -1,20 +1,19 @@
 ﻿@inject IJSRuntime JS
 
-<HeadContent>
-    <link rel="stylesheet" href="@Assets["css/app-loader.css"]" />
-</HeadContent>
-
 <div class="app-loader" @ref="loaderRef">
     <div class="loader-content">
         <div class="loader-glow"></div>
+
         <div class="loader-brand">
             <h1 class="loader-title">Fellside Digital</h1>
             <div class="loader-underline"></div>
         </div>
+
         <div class="loader-bar">
             <div class="loader-progress"></div>
         </div>
     </div>
+
     <div class="grain-overlay"></div>
 </div>
 

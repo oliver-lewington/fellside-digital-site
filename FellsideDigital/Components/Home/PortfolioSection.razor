@@ -1,0 +1,86 @@
+@using FellsideDigital.Components.Home
+@inject NavigationManager NavigationManager
+
+<section id="portfolio"
+         class="py-32 px-6 bg-white dark:bg-neutral-900 transition-colors duration-300">
+    <div class="max-w-7xl mx-auto space-y-16">
+
+        <div>
+            <p id="portfolio-label"
+               class="animated text-sm font-medium uppercase tracking-widest
+                      text-slate-400 dark:text-neutral-500">
+                Portfolio
+            </p>
+            <h2 id="portfolio-heading"
+                class="animated mt-2 text-3xl font-semibold
+                       text-slate-900 dark:text-neutral-100">
+                Projects that perform.
+            </h2>
+        </div>
+
+        <div id="portfolio-grid" class="grid md:grid-cols-2 gap-6">
+            @foreach (var project in HomeData.Projects)
+            {
+                <div @onclick="() => OnCardClick(project.Link)"
+                     class="group cursor-pointer rounded-2xl overflow-hidden
+                            bg-slate-50 ring-1 ring-slate-200
+                            dark:bg-neutral-800/60 dark:ring-white/5
+                            hover:ring-accent/40 hover:shadow-lg
+                            transition-all duration-300">
+
+                    <div class="flex flex-wrap gap-2 px-6 pt-6">
+                        @foreach (var tag in project.Tags)
+                        {
+                            <span class="rounded-full px-2.5 py-0.5 text-xs font-medium
+                                         bg-slate-200 text-slate-600
+                                         dark:bg-neutral-700 dark:text-neutral-300">
+                                @tag
+                            </span>
+                        }
+                    </div>
+
+                    <div class="px-6 pt-4 pb-2">
+                        <h3 class="text-lg font-semibold
+                                   text-slate-900 dark:text-neutral-100
+                                   group-hover:text-accent transition-colors">
+                            @project.Title
+                        </h3>
+                        <p class="mt-1 text-sm leading-relaxed
+                                  text-slate-500 dark:text-neutral-400">
+                            @project.Description
+                        </p>
+                    </div>
+
+                    <div class="px-6 pb-6 mt-4">
+                        <div class="rounded-xl aspect-video overflow-hidden
+                                    bg-slate-200 dark:bg-neutral-700
+                                    flex items-center justify-center">
+                            @if (!string.IsNullOrEmpty(project.MockupImage))
+                            {
+                                <img src="@project.MockupImage"
+                                     alt="@project.Title"
+                                     class="w-full h-full object-cover
+                                            group-hover:scale-[1.02] transition-transform duration-500" />
+                            }
+                            else
+                            {
+                                <span class="text-sm text-slate-400 dark:text-neutral-500">
+                                    Mockup coming soon
+                                </span>
+                            }
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+
+    </div>
+</section>
+
+@code {
+    private async Task OnCardClick(string link)
+    {
+        await Task.Delay(400);
+        NavigationManager.NavigateTo(link);
+    }
+}

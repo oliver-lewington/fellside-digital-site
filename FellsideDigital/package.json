@@ -22,5 +22,8 @@
     "@tailwindcss/cli": "^4.2.1",
     "@tailwindplus/elements": "^1.0.22",
     "tailwindcss": "^4.2.1"
+  },
+  "devDependencies": {
+    "eslint": "^10.0.3"
   }
 }
