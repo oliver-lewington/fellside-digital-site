@@ -361,3 +361,5 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+/FellsideDigital/package-lock.json
+/FellsideDigital/wwwroot/css/tailwind.css
