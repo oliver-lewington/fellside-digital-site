@@ -81,7 +81,7 @@
         color: #e2e8f0;
     }
 
-/* ── Particles — fixed so % values are relative to viewport ── */
+/* ── Particles, fixed so % values are relative to viewport ── */
 .particle {
     position: fixed;
     border-radius: 50%;

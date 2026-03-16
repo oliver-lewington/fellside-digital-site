@@ -1,4 +1,4 @@
-﻿// animeInterop.js — FULL LIBRARY v2
+﻿// animeInterop.js, FULL LIBRARY v2
 // wwwroot/js/animations/animeInterop.js
 //
 // RULE: Never use CSS opacity:0 on elements anime.js will animate.
@@ -31,7 +31,7 @@ window.fellsideAnime = {
 
         el.childNodes.forEach(node => {
             if (node.nodeType === Node.TEXT_NODE) {
-                // Plain text node — split into words normally
+                // Plain text node, split into words normally
                 node.textContent.trim().split(/\s+/).filter(Boolean).forEach(w => {
                     parts.push(
                         `<span style="display:inline-block;overflow:hidden;vertical-align:bottom;">` +
@@ -40,7 +40,7 @@ window.fellsideAnime = {
                     );
                 });
             } else if (node.nodeType === Node.ELEMENT_NODE) {
-                // Inline element e.g. <span class="text-accent"> —
+                // Inline element e.g. <span class="text-accent">,
                 // carry its classes onto each individual word wrapper
                 const cls = node.className || '';
                 node.innerText.trim().split(/\s+/).filter(Boolean).forEach(w => {
@@ -113,7 +113,7 @@ window.fellsideAnime = {
         });
     },
 
-    // 4. CHARS RAIN DOWN — characters fall from above
+    // 4. CHARS RAIN DOWN, characters fall from above
     charsRainDown(selector, options = {}) {
         if (!this._splitChars(selector)) return;
         anime({
@@ -127,7 +127,7 @@ window.fellsideAnime = {
         });
     },
 
-    // 5. CHARS RISE UP — characters float up from below
+    // 5. CHARS RISE UP, characters float up from below
     charsRiseUp(selector, options = {}) {
         if (!this._splitChars(selector)) return;
         anime({
@@ -141,7 +141,7 @@ window.fellsideAnime = {
         });
     },
 
-    // 6. TEXT SCRAMBLE — characters randomise then snap to real text
+    // 6. TEXT SCRAMBLE, characters randomise then snap to real text
     scrambleText(selector, options = {}) {
         const el = document.querySelector(selector);
         if (!el) { console.warn(`[animeInterop] No element: "${selector}"`); return; }
@@ -162,7 +162,7 @@ window.fellsideAnime = {
         }, duration / steps);
     },
 
-    // 7. TYPEWRITER — characters appear one by one, cursor blinks at end
+    // 7. TYPEWRITER, characters appear one by one, cursor blinks at end
     typewriter(selector, options = {}) {
         const el = document.querySelector(selector);
         if (!el) { console.warn(`[animeInterop] No element: "${selector}"`); return; }
@@ -200,7 +200,7 @@ window.fellsideAnime = {
         setTimeout(type, options.startDelay ?? 0);
     },
 
-    // 8. BLUR CLEAR — text fades in and simultaneously un-blurs
+    // 8. BLUR CLEAR, text fades in and simultaneously un-blurs
     blurClear(selector, options = {}) {
         if (!this._splitWords(selector)) return;
         anime({
@@ -214,7 +214,7 @@ window.fellsideAnime = {
         });
     },
 
-    // 9. FLIP IN — words flip in on the Y axis (3D card-flip feel)
+    // 9. FLIP IN, words flip in on the Y axis (3D card-flip feel)
     flipInWords(selector, options = {}) {
         if (!this._splitWords(selector)) return;
         const el = document.querySelector(selector);
@@ -233,7 +233,7 @@ window.fellsideAnime = {
     // ELEMENT / BLOCK ANIMATIONS
     // ═════════════════════════════════════════════════════════════════
 
-    // 10. FADE UP — generic fade+rise for any block element
+    // 10. FADE UP, generic fade+rise for any block element
     fadeUp(selector, options = {}) {
         anime.set(selector, { opacity: 0, translateY: options.distance ?? 30 });
         anime({
@@ -246,7 +246,7 @@ window.fellsideAnime = {
         });
     },
 
-    // 11. ZOOM IN — scale from slightly small, great for cards/images
+    // 11. ZOOM IN, scale from slightly small, great for cards/images
     zoomIn(selector, options = {}) {
         anime.set(selector, { opacity: 0, scale: options.from ?? 0.85 });
         anime({
@@ -259,7 +259,7 @@ window.fellsideAnime = {
         });
     },
 
-    // 12. ELASTIC POP — bouncy scale entrance, great for icons/badges/buttons
+    // 12. ELASTIC POP, bouncy scale entrance, great for icons/badges/buttons
     elasticPop(selector, options = {}) {
         anime.set(selector, { opacity: 0, scale: 0 });
         anime({
@@ -272,7 +272,7 @@ window.fellsideAnime = {
         });
     },
 
-    // 13. SLIDE FROM RIGHT — element(s) enter from off-screen right
+    // 13. SLIDE FROM RIGHT, element(s) enter from off-screen right
     slideFromRight(selector, options = {}) {
         anime.set(selector, { opacity: 0, translateX: options.distance ?? 60 });
         anime({
@@ -285,7 +285,7 @@ window.fellsideAnime = {
         });
     },
 
-    // 14. SLIDE FROM LEFT — element(s) enter from off-screen left
+    // 14. SLIDE FROM LEFT, element(s) enter from off-screen left
     slideFromLeft(selector, options = {}) {
         anime.set(selector, { opacity: 0, translateX: options.distance ?? -60 });
         anime({
@@ -311,7 +311,7 @@ window.fellsideAnime = {
         });
     },
 
-    // 16. COUNTER — fades element in AND ticks number up
+    // 16. COUNTER, fades element in AND ticks number up
     countUp(selector, target, options = {}) {
         const el = document.querySelector(selector);
         if (!el) { console.warn(`[animeInterop] No element: "${selector}"`); return; }
@@ -328,7 +328,7 @@ window.fellsideAnime = {
         });
     },
 
-    // 17. PROGRESS BAR — animates a bar element from 0 → target width %
+    // 17. PROGRESS BAR, animates a bar element from 0 → target width %
     //     Target element should be a div with a fixed height and bg colour
     progressBar(selector, targetPercent, options = {}) {
         anime.set(selector, { width: '0%', opacity: 1 });
@@ -353,7 +353,7 @@ window.fellsideAnime = {
         });
     },
 
-    // 19. PULSE — repeating scale pulse, great for CTAs or live indicators
+    // 19. PULSE, repeating scale pulse, great for CTAs or live indicators
     pulse(selector, options = {}) {
         anime({
             targets: selector,
@@ -366,7 +366,7 @@ window.fellsideAnime = {
         });
     },
 
-    // 20. FLOAT — gentle up/down hover loop, great for hero icons
+    // 20. FLOAT, gentle up/down hover loop, great for hero icons
     float(selector, options = {}) {
         anime({
             targets: selector,
@@ -378,7 +378,7 @@ window.fellsideAnime = {
         });
     },
 
-    // 21. TIMELINE SEQUENCE — orchestrate multiple animations in order
+    // 21. TIMELINE SEQUENCE, orchestrate multiple animations in order
     //     Pass array of { selector, effect, options, offset } objects
     //     offset: ms after previous step starts (default 0 = sequential)
     //
@@ -405,7 +405,7 @@ window.fellsideAnime = {
     },
 
     // ═════════════════════════════════════════════════════════════════
-    // INTERSECTION OBSERVER — fire callback when element scrolls in
+    // INTERSECTION OBSERVER, fire callback when element scrolls in
     // ═════════════════════════════════════════════════════════════════
 
     onVisible(selector, callback, threshold = 0.15) {
@@ -422,7 +422,7 @@ window.fellsideAnime = {
     },
 
     // ═════════════════════════════════════════════════════════════════
-    // SCROLL-TRIGGERED WRAPPERS — OnScroll suffix versions of everything
+    // SCROLL-TRIGGERED WRAPPERS, OnScroll suffix versions of everything
     // ═════════════════════════════════════════════════════════════════
 
     fadeInWordsOnScroll(selector, options = {}) { this.onVisible(selector, () => this.fadeInWords(selector, options)); },

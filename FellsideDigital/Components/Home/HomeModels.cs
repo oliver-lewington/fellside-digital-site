@@ -73,12 +73,12 @@ public static class HomeData
 
         new Service(
             "Deploy",
-            "CI/CD pipelines, custom domains, and hosting — configured and managed so you never think about infrastructure.",
+            "CI/CD pipelines, custom domains, and hosting, configured and managed so you never think about infrastructure.",
             """<svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 16.5V9.75m0 0l3 3m-3-3l-3 3M6.75 19.5a4.5 4.5 0 01-1.41-8.775 5.25 5.25 0 0110.338-2.32 5.75 5.75 0 011.344 11.095" /></svg>"""),
 
         new Service(
             "Maintain",
-            "Ongoing support, monitoring, updates, and performance optimisation — so your software keeps working hard.",
+            "Ongoing support, monitoring, updates, and performance optimisation, so your software keeps working hard.",
             """<svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M11.42 15.17L17.25 21A2.652 2.652 0 0021 17.25l-5.877-5.877M11.42 15.17l2.496-3.03c.317-.384.74-.626 1.208-.766M11.42 15.17l-4.655 5.653a2.548 2.548 0 11-3.586-3.586l5.654-4.654m5.57-4.765l-5.57 4.765m0 0L6.75 9.75M3 3l3.75 3.75" /></svg>"""),
     };
 
@@ -101,7 +101,7 @@ public static class HomeData
     {
         new Faq(
             "Why choose Fellside Digital?",
-            "You deal directly with the developers doing the work — no account managers, no hand-offs. We keep overhead low, which means better value and a more personal service throughout."),
+            "You deal directly with the developers doing the work, no account managers, no hand-offs. We keep overhead low, which means better value and a more personal service throughout."),
 
         new Faq(
             "What kind of projects do you take on?",
@@ -121,7 +121,7 @@ public static class HomeData
 
         new Faq(
             "Can I track progress during the build?",
-            "Yes — every client gets access to our project portal with live milestones, task updates, and feedback threads. No more chasing emails for updates."),
+            "Yes, every client gets access to our project portal with live milestones, task updates, and feedback threads. No more chasing emails for updates."),
 
         new Faq(
             "Do you offer ongoing support after launch?",
@@ -129,6 +129,6 @@ public static class HomeData
 
         new Faq(
             "What do I need to get started?",
-            "It helps to know: what is the main purpose of the software, who are the users, and do you have any brand guidelines or designs? If you're unsure about any of it — just get in touch and we'll work through it together."),
+            "It helps to know: what is the main purpose of the software, who are the users, and do you have any brand guidelines or designs? If you're unsure about any of it, just get in touch and we'll work through it together."),
     };
 }

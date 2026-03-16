@@ -55,7 +55,7 @@
     }
 }
 
-/* ── Offerings cards — hover glow ────────────────────────── */
+/* ── Offerings cards, hover glow ────────────────────────── */
 .offering-card {
     transition: border-color 0.3s ease, box-shadow 0.3s ease, transform 0.3s ease;
     cursor: pointer;
