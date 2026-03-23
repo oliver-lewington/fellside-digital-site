@@ -24,7 +24,7 @@
                             Based in Keswick, Cumbria · Working UK-wide.&nbsp;
 
                             <a href="/contact"
-                                   class="font-semibold whitespace-nowrap text-accent">
+                               class="font-semibold whitespace-nowrap text-indigo-400 dark:text-orange-400">
                                 <span class="absolute inset-0"></span>
                                 Get in touch →
                             </a>
@@ -36,12 +36,12 @@
                         class="animated text-5xl font-semibold tracking-tight
                         text-pretty text-slate-900 dark:text-white sm:text-7xl">
                         Intelligent automation,
-                        <span class="text-accent"> built with intent</span>
+                        <span class="text-indigo-400 dark:text-orange-400"> built with intent</span>
                     </h1>
 
                     <!-- Sub -->
                     <p id="hero-sub"
-                           class="animated mt-8 text-lg font-medium text-pretty
+                       class="animated mt-8 text-lg font-medium text-pretty
                         text-slate-500 dark:text-neutral-400 sm:text-xl/8">
                         Fellside Digital helps businesses eliminate repetitive work,
                         connect their systems, and scale operations with tailored
@@ -51,17 +51,17 @@
                     <!-- CTA -->
                     <div id="hero-cta" class="animated mt-10 flex items-center gap-x-6">
                         <a href="/contact"
-                               class="rounded-md bg-accent px-3.5 py-2.5 text-sm font-semibold
-                            text-white shadow-xs hover:bg-accent/80
+                           class="rounded-md bg-indigo-400 dark:bg-orange-400 px-3.5 py-2.5 text-sm font-semibold
+                            text-white shadow-xs hover:bg-indigo-400/80 dark:hover:bg-orange-400/80
                             focus-visible:outline-2 focus-visible:outline-offset-2
-                            focus-visible:outline-accent transition-colors">
+                            focus-visible:outline-indigo-400 dark:focus-visible:outline-orange-400 transition-colors">
                             Get started
                         </a>
 
                         <button @onclick="ScrollToPortfolio"
                                 class="text-sm font-semibold
-                            text-slate-900 hover:text-accent
-                            dark:text-white dark:hover:text-accent
+                            text-slate-900 hover:text-indigo-400
+                            dark:text-white dark:hover:text-orange-400
                             transition-colors flex items-center gap-1">
                             See what we automate →
                         </button>
@@ -87,6 +87,22 @@
 </section>
 
 @code {
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender) return;
+
+        // ── HERO ──────────────────────────────────────────────────────────
+        await JS.InvokeVoidAsync("fellsideAnime.fadeUp", "#hero-eyebrow",
+            new { distance = 16, duration = 500, startDelay = 200 });
+        await JS.InvokeVoidAsync("fellsideAnime.blurClear", "#hero-heading",
+            new { duration = 1000, stagger = 80, distance = 12, startDelay = 350 });
+        await JS.InvokeVoidAsync("fellsideAnime.fadeInWords", "#hero-sub",
+            new { distance = 24, duration = 700, stagger = 60, startDelay = 900 });
+        await JS.InvokeVoidAsync("fellsideAnime.fadeUp", "#hero-cta",
+            new { distance = 20, duration = 600, startDelay = 1400 });
+
+    }
+
     private async Task ScrollToPortfolio() =>
-        await JS.InvokeVoidAsync("fellsideScroll.toOfferings", "portfolio");
+    await JS.InvokeVoidAsync("fellsideScroll.toOfferings", "portfolio");
 }

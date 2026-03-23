@@ -5,6 +5,10 @@
 		<ImplicitUsings>enable</ImplicitUsings>
 		<UserSecretsId>aspnet-FellsideDigital-0a5bd6ee-ce54-4c5d-87df-9eafd130a922</UserSecretsId>
 	</PropertyGroup>
+	<ItemGroup>
+	  <Content Include="Components\Pages\Home.razor.css" />
+	  <Content Include="Components\Pages\NotFound.razor.css" />
+	</ItemGroup>
 
 	<ItemGroup>
 		<PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="9.0.9" />

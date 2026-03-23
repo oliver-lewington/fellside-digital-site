@@ -1,22 +1,22 @@
 @using FellsideDigital.Components.Home
+
 @inject NavigationManager NavigationManager
+@inject IJSRuntime JS
 
 <section id="portfolio"
          class="py-20 px-6 bg-white dark:bg-neutral-900 transition-colors duration-300">
     <div class="max-w-7xl mx-auto space-y-8">
 
         <div>
-            <p id="portfolio-label"
-                   class="animated text-sm font-medium uppercase tracking-widest
-                text-slate-400 dark:text-neutral-500">
+            <p class="text-sm font-medium uppercase tracking-widest
+                      text-slate-400 dark:text-neutral-500">
                 Our Offerings
             </p>
-            <h2 id="portfolio-heading"
-                class="animated mt-2 text-3xl font-semibold
-                text-slate-900 dark:text-neutral-100">
+            <h2 class="mt-2 text-3xl font-semibold
+                       text-slate-900 dark:text-neutral-100">
                 Automation for every scale.
             </h2>
-            <p class="animated mt-2 text-base text-slate-500 dark:text-neutral-400 max-w-2xl">
+            <p class="mt-2 text-base text-slate-500 dark:text-neutral-400 max-w-2xl">
                 Whether you're a growing business or a large enterprise, we build automation
                 solutions that fit where you are — and scale with where you're going.
             </p>
@@ -26,19 +26,19 @@
             @foreach (var offering in Offerings)
             {
                 <div @onclick="() => OnCardClick(offering.Link)"
-                     class="group cursor-pointer rounded-2xl overflow-hidden
-                    bg-slate-50 ring-1 ring-slate-200
-                    dark:bg-neutral-800/60 dark:ring-white/5
-                    hover:ring-accent/40 hover:shadow-lg
-                    transition-all duration-300 flex flex-col">
+                     class="group cursor-pointer rounded-2xl
+                            bg-slate-50 ring-1 ring-slate-200
+                            dark:bg-neutral-800/60 dark:ring-white/5
+                            hover:ring-indigo-400/40 dark:hover:ring-orange-400/40 hover:shadow-lg
+                            transition-[box-shadow,ring-color] duration-100 flex flex-col">
 
                     <!-- Tags -->
                     <div class="flex flex-wrap gap-2 px-6 pt-6">
                         @foreach (var tag in offering.Tags)
                         {
                             <span class="rounded-full px-2.5 py-0.5 text-xs font-medium
-                                bg-slate-200 text-slate-600
-                                dark:bg-neutral-700 dark:text-neutral-300">
+                                         bg-slate-200 text-slate-600
+                                         dark:bg-neutral-700 dark:text-neutral-300">
                                 @tag
                             </span>
                         }
@@ -47,12 +47,12 @@
                     <!-- Title & Description -->
                     <div class="px-6 pt-4 pb-2 flex-1">
                         <h3 class="text-lg font-semibold
-                            text-slate-900 dark:text-neutral-100
-                            group-hover:text-accent transition-colors">
+                               text-slate-900 dark:text-neutral-100
+                               group-hover:text-indigo-400 dark:group-hover:text-orange-400
+                               transition-colors">
                             @offering.Title
                         </h3>
-                        <p class="mt-1 text-sm leading-relaxed
-                            text-slate-500 dark:text-neutral-400">
+                        <p class="mt-1 text-sm leading-relaxed text-slate-500 dark:text-neutral-400">
                             @offering.Description
                         </p>
 
@@ -60,9 +60,8 @@
                         <ul class="mt-4 space-y-2">
                             @foreach (var feature in offering.Features)
                             {
-                                <li class="flex items-start gap-2 text-sm
-                                    text-slate-500 dark:text-neutral-400">
-                                    <span class="mt-0.5 text-accent font-bold">✓</span>
+                                <li class="flex items-start gap-2 text-sm text-slate-500 dark:text-neutral-400">
+                                    <span class="mt-0.5 font-bold text-indigo-400 dark:text-orange-400">✓</span>
                                     @feature
                                 </li>
                             }
@@ -72,7 +71,8 @@
                     <!-- CTA Footer -->
                     <div class="px-6 pb-6 mt-6">
                         <span class="inline-flex items-center gap-1 text-sm font-semibold
-                            text-accent group-hover:gap-2 transition-all duration-200">
+                                 text-indigo-400 dark:text-orange-400
+                                 group-hover:gap-2 transition-all duration-200">
                             Learn more →
                         </span>
                     </div>
@@ -85,6 +85,18 @@
 </section>
 
 @code {
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender) return;
+
+        await JS.InvokeVoidAsync("fellsideAnime.zoomInOnScroll", "#portfolio-grid > div", new
+        {
+            from = 0.88,
+            duration = 650,
+            stagger = 120
+        });
+    }
 
     private record Offering(string Title, string Description, string Link, string[] Tags, string[] Features);
 

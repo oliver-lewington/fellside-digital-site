@@ -3,7 +3,7 @@ html {
 }
 
 html, body {
-    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
 }
 
 /* Animated utility */
@@ -72,4 +72,19 @@ html, body {
         opacity: 1 !important;
         transition: none !important;
     }
+}
+
+/* In your app.css or a <HeadContent> style block */
+
+/* Anime.js splits text into these wrapper spans — descenders get clipped without this */
+[data-anime-words] span,
+[data-anime-chars] span {
+    padding-bottom: 0.17em;
+    margin-bottom: -0.17em;
+}
+
+h1 span,
+h2 span {
+    padding-bottom: 0.17em;
+    margin-bottom: -0.17em;
 }

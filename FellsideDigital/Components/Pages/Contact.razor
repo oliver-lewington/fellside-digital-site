@@ -41,11 +41,11 @@
                 <div class="group rounded-2xl p-6 space-y-4
                             bg-white ring-1 ring-slate-200
                             dark:bg-neutral-900 dark:ring-white/5
-                            hover:ring-accent/40 hover:shadow-md
+                            hover:ring-indigo-400/40 dark:hover:ring-orange-400/40 hover:shadow-md
                             transition-all duration-200">
                     <div class="w-10 h-10 rounded-xl flex items-center justify-center
-                                bg-accent/10 text-accent
-                                group-hover:bg-accent/20 transition-colors">
+                                bg-indigo-400/10 dark:bg-orange-400/10 text-indigo-400 dark:text-orange-400
+                                group-hover:bg-indigo-400/20 dark:group-hover:bg-orange-400/20 transition-colors">
                         <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24"
                              fill="none" stroke="currentColor" stroke-width="1.75"
                              stroke-linecap="round" stroke-linejoin="round">
@@ -64,7 +64,8 @@
                         </p>
                     </div>
                     <a href="tel:+441234567890"
-                       class="inline-flex items-center gap-1.5 text-sm font-medium text-accent
+                       class="inline-flex items-center gap-1.5 text-sm font-medium
+                              text-indigo-400 dark:text-orange-400
                               hover:underline underline-offset-4 transition">
                         +44 (0) 1234 567 890
                         <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" viewBox="0 0 24 24"
@@ -79,11 +80,11 @@
                 <div class="group rounded-2xl p-6 space-y-4
                             bg-white ring-1 ring-slate-200
                             dark:bg-neutral-900 dark:ring-white/5
-                            hover:ring-accent/40 hover:shadow-md
+                            hover:ring-indigo-400/40 dark:hover:ring-orange-400/40 hover:shadow-md
                             transition-all duration-200">
                     <div class="w-10 h-10 rounded-xl flex items-center justify-center
-                                bg-accent/10 text-accent
-                                group-hover:bg-accent/20 transition-colors">
+                                bg-indigo-400/10 dark:bg-orange-400/10 text-indigo-400 dark:text-orange-400
+                                group-hover:bg-indigo-400/20 dark:group-hover:bg-orange-400/20 transition-colors">
                         <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24"
                              fill="none" stroke="currentColor" stroke-width="1.75"
                              stroke-linecap="round" stroke-linejoin="round">
@@ -101,7 +102,8 @@
                     </div>
                     <a href="https://wa.me/441234567890"
                        target="_blank" rel="noopener noreferrer"
-                       class="inline-flex items-center gap-1.5 text-sm font-medium text-accent
+                       class="inline-flex items-center gap-1.5 text-sm font-medium
+                              text-indigo-400 dark:text-orange-400
                               hover:underline underline-offset-4 transition">
                         Open WhatsApp
                         <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" viewBox="0 0 24 24"
@@ -116,11 +118,11 @@
                 <div class="group rounded-2xl p-6 space-y-4
                             bg-white ring-1 ring-slate-200
                             dark:bg-neutral-900 dark:ring-white/5
-                            hover:ring-accent/40 hover:shadow-md
+                            hover:ring-indigo-400/40 dark:hover:ring-orange-400/40 hover:shadow-md
                             transition-all duration-200">
                     <div class="w-10 h-10 rounded-xl flex items-center justify-center
-                                bg-accent/10 text-accent
-                                group-hover:bg-accent/20 transition-colors">
+                                bg-indigo-400/10 dark:bg-orange-400/10 text-indigo-400 dark:text-orange-400
+                                group-hover:bg-indigo-400/20 dark:group-hover:bg-orange-400/20 transition-colors">
                         <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24"
                              fill="none" stroke="currentColor" stroke-width="1.75"
                              stroke-linecap="round" stroke-linejoin="round">
@@ -137,7 +139,8 @@
                     </div>
                     <a href="https://maps.google.com/?q=Cumbria,+England"
                        target="_blank" rel="noopener noreferrer"
-                       class="inline-flex items-center gap-1.5 text-sm font-medium text-accent
+                       class="inline-flex items-center gap-1.5 text-sm font-medium
+                              text-indigo-400 dark:text-orange-400
                               hover:underline underline-offset-4 transition">
                         View on Google
                         <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" viewBox="0 0 24 24"
@@ -185,9 +188,9 @@
                             @onclick="() => TryGoToStep(stepIndex)"
                             disabled="@(stepIndex > _currentStep)"
                             class="@($"flex items-center gap-2 px-4 py-2 text-sm font-medium transition-colors " +
-                                                                 $"{(isActive ? "text-accent" : isDone ? "text-slate-900 dark:text-neutral-100 hover:text-accent" : "text-slate-400 dark:text-neutral-600 cursor-not-allowed")}")">
+                                                                 $"{(isActive ? "text-indigo-400 dark:text-orange-400" : isDone ? "text-slate-900 dark:text-neutral-100 hover:text-indigo-400 dark:hover:text-orange-400" : "text-slate-400 dark:text-neutral-600 cursor-not-allowed")}")">
                     <span class="@($"w-6 h-6 rounded-full flex items-center justify-center text-xs font-semibold transition-colors " +
-                                                                 $"{(isActive ? "bg-accent text-white" : isDone ? "bg-accent/20 text-accent" : "bg-slate-200 dark:bg-neutral-800 text-slate-400 dark:text-neutral-600")}")">
+                                                                 $"{(isActive ? "bg-indigo-400 dark:bg-orange-400 text-white" : isDone ? "bg-indigo-400/20 dark:bg-orange-400/20 text-indigo-400 dark:text-orange-400" : "bg-slate-200 dark:bg-neutral-800 text-slate-400 dark:text-neutral-600")}")">
                         @if (isDone)
                             {
                                 <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" viewBox="0 0 24 24"
@@ -345,8 +348,8 @@
                     {
                         <button type="button" @onclick="PreviousStep"
                                 class="inline-flex items-center gap-2 text-sm font-medium
-                                           text-slate-500 dark:text-neutral-400
-                                           hover:text-slate-900 dark:hover:text-neutral-100 transition-colors">
+                                               text-slate-500 dark:text-neutral-400
+                                               hover:text-slate-900 dark:hover:text-neutral-100 transition-colors">
                             <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24"
                                  fill="none" stroke="currentColor" stroke-width="2"
                                  stroke-linecap="round" stroke-linejoin="round">
@@ -363,7 +366,8 @@
                     @if (_submitted)
                     {
                         <div class="flex items-center gap-2 rounded-xl px-5 py-2.5
-                                         bg-accent/10 text-accent text-sm font-medium">
+                                             bg-indigo-400/10 dark:bg-orange-400/10
+                                             text-indigo-400 dark:text-orange-400 text-sm font-medium">
                             <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24"
                                  fill="none" stroke="currentColor" stroke-width="2"
                                  stroke-linecap="round" stroke-linejoin="round">
@@ -376,8 +380,9 @@
                     {
                         <button type="button" @onclick="NextStep"
                                 class="inline-flex items-center gap-2 rounded-xl px-6 py-2.5
-                                           text-sm font-semibold bg-accent text-white
-                                           hover:opacity-90 active:scale-95 transition-all shadow-sm">
+                                               text-sm font-semibold
+                                               bg-indigo-400 dark:bg-orange-400 text-white
+                                               hover:opacity-90 active:scale-95 transition-all shadow-sm">
                             Next
                             <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24"
                                  fill="none" stroke="currentColor" stroke-width="2"
@@ -390,10 +395,11 @@
                     {
                         <button type="submit" disabled="@_sending"
                                 class="inline-flex items-center gap-2 rounded-xl px-6 py-2.5
-                                           text-sm font-semibold bg-accent text-white
-                                           hover:opacity-90 active:scale-95
-                                           disabled:opacity-50 disabled:cursor-not-allowed
-                                           transition-all shadow-sm">
+                                               text-sm font-semibold
+                                               bg-indigo-400 dark:bg-orange-400 text-white
+                                               hover:opacity-90 active:scale-95
+                                               disabled:opacity-50 disabled:cursor-not-allowed
+                                               transition-all shadow-sm">
                             @if (_sending)
                             {
                                 <svg class="w-4 h-4 animate-spin" xmlns="http://www.w3.org/2000/svg"
@@ -452,7 +458,7 @@
         "ring-1 ring-slate-200 dark:ring-white/10 " +
         "text-slate-900 dark:text-neutral-100 " +
         "placeholder:text-slate-400 dark:placeholder:text-neutral-500 " +
-        "focus:outline-none focus:ring-2 focus:ring-accent/50 transition";
+        "focus:outline-none focus:ring-2 focus:ring-indigo-400/50 dark:focus:ring-orange-400/50 transition";
 
     private class ContactFormModel
     {
