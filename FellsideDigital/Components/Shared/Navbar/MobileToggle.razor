@@ -1,0 +1,17 @@
+﻿<button @onclick="Toggle"
+        class="sm:hidden p-2 text-gray-400">
+
+    @if (IsOpen)
+    {
+        <span>✕</span>
+    }
+    else
+    {
+        <span>☰</span>
+    }
+</button>
+
+@code {
+    [Parameter] public bool IsOpen { get; set; }
+    [Parameter] public EventCallback Toggle { get; set; }
+}

@@ -85,10 +85,54 @@
 .particle {
     position: fixed;
     border-radius: 50%;
-    background: rgba(99, 102, 241, 0.4);
+    background: rgba(99, 102, 241, 0.5);
     pointer-events: none;
-    z-index: 1;
-    box-shadow: 0 0 6px rgba(99, 102, 241, 0.3);
+    z-index: 999;
+    box-shadow: 0 0 8px rgba(99, 102, 241, 0.4);
+    animation: particle-float linear infinite alternate;
+}
+
+@keyframes particle-float {
+    0% {
+        transform: translateY(0px);
+        opacity: 0.6;
+    }
+
+    100% {
+        transform: translateY(-20px);
+        opacity: 1;
+    }
+}
+
+/* Each particle gets its own duration and delay so they drift independently */
+#particle-1 {
+    animation-duration: 3.1s;
+    animation-delay: 0.0s;
+}
+
+#particle-2 {
+    animation-duration: 2.6s;
+    animation-delay: 0.7s;
+}
+
+#particle-3 {
+    animation-duration: 3.8s;
+    animation-delay: 1.3s;
+}
+
+#particle-4 {
+    animation-duration: 2.9s;
+    animation-delay: 0.4s;
+}
+
+#particle-5 {
+    animation-duration: 3.4s;
+    animation-delay: 1.8s;
+}
+
+#particle-6 {
+    animation-duration: 3.2s;
+    animation-delay: 0.9s;
 }
 
 /* ── Error page divider ── */
