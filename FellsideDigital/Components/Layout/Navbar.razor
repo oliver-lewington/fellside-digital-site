@@ -2,33 +2,36 @@
 @using Microsoft.AspNetCore.Components.Authorization
 
 <nav class="fixed inset-x-0 top-0 z-50
-            border-b border-gray-200 dark:border-white/10
-            bg-white/80 dark:bg-gray-900/80
-            backdrop-blur-2xl backdrop-saturate-200
-            supports-[backdrop-filter]:bg-white/70
-            dark:supports-[backdrop-filter]:bg-gray-900/70">
+    border-b border-gray-200 dark:border-white/10
+    bg-white/80 dark:bg-gray-900/80
+    backdrop-blur-2xl backdrop-saturate-200
+    supports-[backdrop-filter]:bg-white/70
+    dark:supports-[backdrop-filter]:bg-gray-900/70">
 
-    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div class="flex h-16 justify-between">
+    <div class="mx-auto max-w-7xl px-2 sm:px-6 lg:px-8">
+        <div class="relative flex h-16 justify-between">
 
-            <!-- Left -->
-            <div class="flex">
-                <NavLink href="/" class="flex items-center">
-                    <img src="@Assets["imgs/logo-automation-black.svg"]"
+            <div class="absolute inset-y-0 left-0 flex items-center sm:hidden">
+                <MobileToggle IsOpen="_mobileMenuOpen" Toggle="ToggleMobileMenu" />
+            </div>
+
+            <div class="flex flex-1 items-center justify-center sm:items-stretch sm:justify-start">
+                
+                <NavLink href="/" class="flex shrink-0 items-center">
+                    <img src="@Assets["imgs/svgs/logo-indigo.svg"]"
                          class="h-10 w-auto dark:hidden" />
-                    <img src="@Assets["imgs/logo-automation-white.svg"]"
+                    <img src="@Assets["imgs/svgs/logo-orange.svg"]"
                          class="h-10 w-auto not-dark:hidden" />
                 </NavLink>
 
                 <NavLinks Links="_navLinks"
-                          BaseClass="hidden sm:flex sm:ml-6 sm:space-x-8"
-                          LinkClass="inline-flex items-center border-b-2 border-b-transparent px-1 pt-1 text-sm font-medium text-gray-500 dark:text-gray-400 hover:border-b-gray-300 dark:hover:border-b-white/20 hover:text-gray-700 dark:hover:text-gray-200 transition-all duration-150"
-                          ActiveClass="text-gray-900 dark:text-white !border-b-indigo-500 dark:!border-b-orange-400"
+                          BaseClass="hidden sm:ml-6 sm:flex sm:space-x-8"
+                          LinkClass="inline-flex items-center border-b-2 border-transparent px-1 pt-1 text-sm font-medium text-gray-500 dark:text-gray-400 hover:border-gray-300 dark:hover:border-white/20 hover:text-gray-700 dark:hover:text-gray-200 transition-all duration-150"
+                          ActiveClass="border-indigo-600 text-gray-900 dark:border-orange-400 dark:text-white"
                           Match="NavLinkMatch.All" />
             </div>
 
-            <!-- Right -->
-            <div class="hidden sm:flex sm:items-center sm:ml-6">
+            <div class="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
                 <AuthorizeView>
                     <Authorized>
                         <NotificationBell HasNotifications="_hasNotifications" />
@@ -37,15 +40,12 @@
 
                     <NotAuthorized>
                         <NavLink href="/Account/Login"
-                           class="inline-flex items-center gap-2 text-sm font-semibold text-slate-700 dark:text-neutral-200 hover:text-indigo-400 dark:hover:text-orange-400">
+                                 class="ml-3 inline-flex items-center gap-2 text-sm font-semibold text-slate-700 dark:text-neutral-200 hover:text-indigo-400 dark:hover:text-orange-400">
                             Login →
                         </NavLink>
                     </NotAuthorized>
                 </AuthorizeView>
             </div>
-
-            <!-- Mobile toggle -->
-            <MobileToggle IsOpen="_mobileMenuOpen" Toggle="ToggleMobileMenu" />
         </div>
     </div>
 
