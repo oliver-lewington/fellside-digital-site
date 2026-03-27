@@ -128,3 +128,5 @@ window.fellsideTheme = {
         document.getElementsByTagName('head')[0].appendChild(link);
     }
 };
+
+window.fellsideTheme.init();
