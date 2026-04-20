@@ -12,45 +12,91 @@
 @inject IdentityUserAccessor UserAccessor
 @inject NavigationManager NavigationManager
 
-<PageTitle>Manage email</PageTitle>
+<PageTitle>Email — Fellside Digital</PageTitle>
 
-<h3>Manage email</h3>
-
-<StatusMessage Message="@message"/>
-<div class="row">
-    <div class="col-xl-6">
-        <form @onsubmit="OnSendEmailVerificationAsync" @formname="send-verification" id="send-verification-form" method="post">
-            <AntiforgeryToken />
-        </form>
-        <EditForm Model="Input" FormName="change-email" OnValidSubmit="OnValidSubmitAsync" method="post">
-            <DataAnnotationsValidator />
-            <ValidationSummary class="text-danger" role="alert" />
-            @if (isEmailConfirmed)
-            {
-                <div class="form-floating mb-3 input-group">
-                    <input type="text" value="@email" id="email" class="form-control" placeholder="Enter your email" disabled />
-                    <div class="input-group-append">
-                        <span class="h-100 input-group-text text-success font-weight-bold">✓</span>
-                    </div>
-                    <label for="email" class="form-label">Email</label>
-                </div>
-            }
-            else
-            {
-                <div class="form-floating mb-3">
-                    <input type="text" value="@email" id="email" class="form-control" placeholder="Enter your email" disabled />
-                    <label for="email" class="form-label">Email</label>
-                    <button type="submit" class="btn btn-link" form="send-verification-form">Send verification email</button>
-                </div>
-            }
-            <div class="form-floating mb-3">
-                <InputText @bind-Value="Input.NewEmail" id="Input.NewEmail" class="form-control" autocomplete="email" aria-required="true" placeholder="Enter a new email" />
-                <label for="Input.NewEmail" class="form-label">New email</label>
-                <ValidationMessage For="() => Input.NewEmail" class="text-danger" />
-            </div>
-            <button type="submit" class="w-100 btn btn-lg btn-primary">Change email</button>
-        </EditForm>
+<div class="space-y-6">
+    <div>
+        <h2 class="text-2xl font-semibold text-slate-900 dark:text-white">
+            Email
+        </h2>
+        <p class="mt-1 text-sm text-slate-500 dark:text-neutral-400">
+            Manage your email address and verification status
+        </p>
     </div>
+
+    <StatusMessage Message="@message"/>
+
+    <form @onsubmit="OnSendEmailVerificationAsync" @formname="send-verification" id="send-verification-form" method="post">
+        <AntiforgeryToken />
+    </form>
+
+    <EditForm Model="Input" FormName="change-email" OnValidSubmit="OnValidSubmitAsync" method="post" class="space-y-6">
+        <DataAnnotationsValidator />
+        <ValidationSummary class="rounded-md bg-red-50 p-3 text-sm text-red-700 dark:bg-red-900/20 dark:text-red-400" role="alert" />
+
+        <div>
+            <label for="email" class="block text-sm/6 font-medium text-slate-900 dark:text-white">
+                Current email
+            </label>
+            <div class="mt-2">
+                @if (isEmailConfirmed)
+                {
+                    <div class="relative">
+                        <input type="text" 
+                               value="@email" 
+                               id="email" 
+                               disabled
+                               class="block w-full rounded-md bg-gray-50 px-3 py-1.5 pr-12 text-base text-slate-900 outline-1 -outline-offset-1 outline-gray-300 disabled:cursor-not-allowed disabled:text-gray-500 sm:text-sm/6 dark:bg-white/5 dark:text-neutral-400 dark:outline-white/10" />
+                        <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
+                            <svg class="h-5 w-5 text-green-500" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 1 0 0-16 8 8 0 0 0 0 16Zm3.857-9.809a.75.75 0 0 0-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 1 0-1.06 1.061l2.5 2.5a.75.75 0 0 0 1.137-.089l4-5.5Z" clip-rule="evenodd" />
+                            </svg>
+                        </div>
+                    </div>
+                    <p class="mt-1 text-xs text-green-600 dark:text-green-400">
+                        Email verified
+                    </p>
+                }
+                else
+                {
+                    <input type="text" 
+                           value="@email" 
+                           id="email"
+                           disabled
+                           class="block w-full rounded-md bg-gray-50 px-3 py-1.5 text-base text-slate-900 outline-1 -outline-offset-1 outline-gray-300 disabled:cursor-not-allowed disabled:text-gray-500 sm:text-sm/6 dark:bg-white/5 dark:text-neutral-400 dark:outline-white/10" />
+                    <div class="mt-2">
+                        <button type="submit" 
+                                form="send-verification-form"
+                                class="text-sm font-semibold text-indigo-400 hover:text-indigo-400/80 dark:text-orange-400 dark:hover:text-orange-400/80">
+                            Send verification email
+                        </button>
+                    </div>
+                }
+            </div>
+        </div>
+
+        <div>
+            <label for="Input.NewEmail" class="block text-sm/6 font-medium text-slate-900 dark:text-white">
+                New email
+            </label>
+            <div class="mt-2">
+                <InputText @bind-Value="Input.NewEmail" 
+                           id="Input.NewEmail" 
+                           autocomplete="email" 
+                           aria-required="true" 
+                           placeholder="Enter a new email"
+                           class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-slate-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-400 sm:text-sm/6 dark:bg-white/5 dark:text-white dark:outline-white/10 dark:placeholder:text-gray-500 dark:focus:outline-orange-400" />
+                <ValidationMessage For="() => Input.NewEmail" class="mt-1 text-xs text-red-600 dark:text-red-400" />
+            </div>
+        </div>
+
+        <div class="flex items-center justify-end gap-3 pt-4 border-t border-gray-200 dark:border-white/10">
+            <button type="submit" 
+                    class="inline-flex justify-center rounded-md bg-indigo-400 px-4 py-2 text-sm font-semibold text-white shadow-xs hover:bg-indigo-400/80 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-400 dark:bg-orange-400 dark:hover:bg-orange-400/80 dark:focus-visible:outline-orange-400 transition-colors">
+                Change email
+            </button>
+        </div>
+    </EditForm>
 </div>
 
 @code {
