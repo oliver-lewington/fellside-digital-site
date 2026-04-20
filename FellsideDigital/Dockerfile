@@ -7,10 +7,15 @@ WORKDIR /app
 EXPOSE 8080
 EXPOSE 8081
 
-
 # This stage is used to build the service project
 FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
 ARG BUILD_CONFIGURATION=Release
+
+# install Node.js
+RUN apt-get update && apt-get install -y curl
+RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash -
+RUN apt-get install -y nodejs
+
 WORKDIR /src
 COPY ["FellsideDigital/FellsideDigital.csproj", "FellsideDigital/"]
 RUN dotnet restore "./FellsideDigital/FellsideDigital.csproj"
