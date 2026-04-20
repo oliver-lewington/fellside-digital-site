@@ -1,0 +1,29 @@
+#components-reconnect-modal {
+    display: none;
+}
+
+#components-reconnect-modal.components-reconnect-show {
+    display: block;
+}
+
+#components-reconnect-modal.components-reconnect-show #reconnect-message::after {
+    content: "Reconnecting…";
+}
+
+#components-reconnect-modal.components-reconnect-failed #reconnect-message::after {
+    content: "Connection lost — retrying…";
+}
+
+#components-reconnect-modal.components-reconnect-rejected #reconnect-message::after {
+    content: "Could not reconnect.";
+}
+
+#components-reconnect-modal.components-reconnect-failed #reconnect-spinner,
+#components-reconnect-modal.components-reconnect-rejected #reconnect-spinner {
+    animation: none;
+    border: none;
+    width: 0.5rem;
+    height: 0.5rem;
+    background-color: #f87171;
+    border-radius: 9999px;
+}

@@ -124,7 +124,7 @@ window.fellsideTheme = {
         const link = document.querySelector("link[rel*='icon']") || document.createElement('link');
         link.type = 'image/x-icon';
         link.rel = 'icon';
-        link.href = theme === 'dark' ? '/favicon-dark.png' : '/favicon.png';
+        link.href = theme === 'dark' ? '/favicon-dark.ico' : '/favicon.ico';
         document.getElementsByTagName('head')[0].appendChild(link);
     }
 };
