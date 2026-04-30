@@ -5,18 +5,24 @@
 		<ImplicitUsings>enable</ImplicitUsings>
 		<UserSecretsId>aspnet-FellsideDigital-0a5bd6ee-ce54-4c5d-87df-9eafd130a922</UserSecretsId>
 		<DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+		<DockerComposeProjectPath>..\docker-compose.dcproj</DockerComposeProjectPath>
 	</PropertyGroup>
 
 	<ItemGroup>
 		<PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="9.0.9" />
 		<PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="9.0.9" />
-		<PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="9.0.9" />
 		<PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="9.0.9" />
 		<PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.23.0" />
+		<PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="9.0.4" />
 	</ItemGroup>
 
 	<ItemGroup>
 		<Watch Include="./Styles/tailwind.css" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Folder Include="Data\Migrations\" />
+	  <Folder Include="NewFolder\" />
 	</ItemGroup>
 
 	<Target Name="CheckNodeInstalled" BeforeTargets="Compile">
