@@ -1,12 +1,13 @@
 services:
   fellsidedigital:
+    container_name: fellside_digital
     image: ${DOCKER_REGISTRY-}fellsidedigital
     build:
       context: .
       dockerfile: FellsideDigital/Dockerfile
     environment:
       # Application Settings
-      - ConnectionStrings__DefaultConnection=Host=auction_portal_postgres;Port=5432;Database=${POSTGRES_DB};Username=${POSTGRES_USER};Password=${POSTGRES_PASSWORD}
+      - ConnectionStrings__DefaultConnection=Host=fellside_digital_postgres;Port=5432;Database=${POSTGRES_DB};Username=${POSTGRES_USER};Password=${POSTGRES_PASSWORD}
       - ADMIN_EMAIL=${ADMIN_EMAIL}
       - ADMIN_PASSWORD=${ADMIN_PASSWORD}
       - ASPNETCORE_ENVIRONMENT=Production
@@ -14,11 +15,11 @@ services:
       - "8080:8080"
       - "8081:8081"
     depends_on:
-      - auction_portal_postgres
+      - fellside_digital_postgres
 
-  auction_portal_postgres:
+  fellside_digital_postgres:
     image: postgres:15
-    container_name: auction_portal_postgres
+    container_name: fellside_digital_postgres
     restart: unless-stopped
     environment:
       - POSTGRES_DB=${POSTGRES_DB}
