@@ -1,5 +1,6 @@
 services:
   fellsidedigital:
+    container_name: fellside_digital
     image: ${DOCKER_REGISTRY-}fellsidedigital
     build:
       context: .
@@ -27,6 +28,11 @@ services:
 
   fellside_digital_postgres:
     image: postgres:15
+      - fellside_digital_postgres
+
+  fellside_digital_postgres:
+    image: postgres:15
+    container_name: fellside_digital_postgres
     restart: unless-stopped
     environment:
       - POSTGRES_DB=${POSTGRES_DB}
