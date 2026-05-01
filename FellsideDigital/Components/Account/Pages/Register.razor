@@ -1,17 +1,17 @@
-﻿@page "/Account/Register"
+@page "/Account/Register"
 
 @using System.ComponentModel.DataAnnotations
-@using System.Text
-@using System.Text.Encodings.Web
 @using Microsoft.AspNetCore.Identity
-@using Microsoft.AspNetCore.WebUtilities
 @using FellsideDigital.Data
+@using FellsideDigital.Services
 @using FellsideDigital.Components.Layout
 
 @inject UserManager<ApplicationUser> UserManager
 @inject IUserStore<ApplicationUser> UserStore
 @inject SignInManager<ApplicationUser> SignInManager
 @inject IEmailSender<ApplicationUser> EmailSender
+@inject IInvitationService InvitationService
+@inject EmailService EmailService
 @inject ILogger<Register> Logger
 @inject NavigationManager NavigationManager
 @inject IdentityRedirectManager RedirectManager
@@ -28,101 +28,129 @@
                     <img src="@Assets["favicon-dark.ico"]" alt="Fellside Digital Logo (Dark)" class="h-10 w-auto not-dark:hidden" />
                 </NavLink>
 
-                <h2 class="mt-8 text-2xl/9 font-bold tracking-tight text-slate-900 dark:text-white">
-                    Create your account
-                </h2>
-
-                <p class="mt-2 text-sm/6 text-slate-500 dark:text-neutral-400">
-                    Already have an account?
-                    <NavLink href="/Account/Login"
-                             class="font-semibold text-indigo-400 hover:text-indigo-400/80 dark:text-orange-400 dark:hover:text-orange-400/80">
-                        Sign in
-                    </NavLink>
-                </p>
+                @if (_invitation is not null)
+                {
+                    <h2 class="mt-8 text-2xl/9 font-bold tracking-tight text-slate-900 dark:text-white">
+                        Set up your account
+                    </h2>
+                    <p class="mt-2 text-sm/6 text-slate-500 dark:text-neutral-400">
+                        Welcome, @_invitation.FirstName. Your details are pre-filled — just choose a password.
+                    </p>
+                }
+                else if (_tokenInvalid)
+                {
+                    <h2 class="mt-8 text-2xl/9 font-bold tracking-tight text-slate-900 dark:text-white">
+                        Invitation invalid
+                    </h2>
+                }
+                else
+                {
+                    <h2 class="mt-8 text-2xl/9 font-bold tracking-tight text-slate-900 dark:text-white">
+                        Registration by invitation only
+                    </h2>
+                    <p class="mt-2 text-sm/6 text-slate-500 dark:text-neutral-400">
+                        To create an account please contact
+                        <a href="/contact" class="font-semibold text-indigo-400 hover:text-indigo-400/80 dark:text-orange-400 dark:hover:text-orange-400/80">Fellside Digital</a>
+                        to request an invitation.
+                    </p>
+                }
             </div>
 
             <div class="mt-10">
-                @if (!string.IsNullOrEmpty(Message))
+                @if (_tokenInvalid)
                 {
-                    <div class="mb-6 rounded-md bg-red-50 p-4 dark:bg-red-900/20">
-                        <p class="text-sm text-red-700 dark:text-red-400">@Message</p>
+                    <div class="rounded-md bg-red-50 p-4 dark:bg-red-900/20">
+                        <p class="text-sm text-red-700 dark:text-red-400">
+                            This invitation link is invalid, has expired, or has already been used.
+                            Please contact <a href="/contact" class="underline">Fellside Digital</a> for a new invitation.
+                        </p>
                     </div>
                 }
-
-                <EditForm Model="Input" method="post" OnValidSubmit="RegisterUser" FormName="register" class="space-y-6">
-                    <DataAnnotationsValidator />
-                    <ValidationSummary class="rounded-md bg-red-50 p-3 text-sm text-red-700 dark:bg-red-900/20 dark:text-red-400" role="alert" />
-
-                    <div>
-                        <label class="block text-sm/6 font-medium text-slate-900 dark:text-white">Email address</label>
-                        <div class="mt-2">
-                            <InputText @bind-Value="Input.Email"
-                                       id="Input.Email"
-                                       autocomplete="username"
-                                       placeholder="you@example.com"
-                                       class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-slate-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-400 sm:text-sm/6 dark:bg-white/5 dark:text-white dark:outline-white/10 dark:placeholder:text-gray-500 dark:focus:outline-orange-400" />
-                            <ValidationMessage For="() => Input.Email" class="mt-1 text-xs text-red-600 dark:text-red-400" />
+                else if (_invitation is not null)
+                {
+                    @if (!string.IsNullOrEmpty(Message))
+                    {
+                        <div class="mb-6 rounded-md bg-red-50 p-4 dark:bg-red-900/20">
+                            <p class="text-sm text-red-700 dark:text-red-400">@Message</p>
                         </div>
-                    </div>
+                    }
 
-                    <div>
-                        <label class="block text-sm/6 font-medium text-slate-900 dark:text-white">Password</label>
-                        <div class="mt-2">
-                            <InputText type="password"
-                                       @bind-Value="Input.Password"
-                                       id="Input.Password"
-                                       autocomplete="new-password"
-                                       placeholder="••••••••"
-                                       class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-slate-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-400 sm:text-sm/6 dark:bg-white/5 dark:text-white dark:outline-white/10 dark:placeholder:text-gray-500 dark:focus:outline-orange-400" />
-                            <ValidationMessage For="() => Input.Password" class="mt-1 text-xs text-red-600 dark:text-red-400" />
+                    <EditForm Model="Input" method="post" OnValidSubmit="RegisterUser" FormName="register" class="space-y-6">
+                        <DataAnnotationsValidator />
+                        <ValidationSummary class="rounded-md bg-red-50 p-3 text-sm text-red-700 dark:bg-red-900/20 dark:text-red-400" role="alert" />
+
+                        <div>
+                            <label class="block text-sm/6 font-medium text-slate-900 dark:text-white">Email address</label>
+                            <div class="mt-2">
+                                <InputText @bind-Value="Input.Email"
+                                           id="Input.Email"
+                                           autocomplete="username"
+                                           readonly
+                                           class="block w-full rounded-md bg-gray-50 px-3 py-1.5 text-base text-slate-500 outline-1 -outline-offset-1 outline-gray-300 sm:text-sm/6 dark:bg-white/5 dark:text-neutral-400 dark:outline-white/10 cursor-not-allowed" />
+                            </div>
                         </div>
-                    </div>
 
-                    <div>
-                        <label class="block text-sm/6 font-medium text-slate-900 dark:text-white">Confirm password</label>
-                        <div class="mt-2">
-                            <InputText type="password"
-                                       @bind-Value="Input.ConfirmPassword"
-                                       id="Input.ConfirmPassword"
-                                       autocomplete="new-password"
-                                       placeholder="••••••••"
-                                       class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-slate-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-400 sm:text-sm/6 dark:bg-white/5 dark:text-white dark:outline-white/10 dark:placeholder:text-gray-500 dark:focus:outline-orange-400" />
-                            <ValidationMessage For="() => Input.ConfirmPassword" class="mt-1 text-xs text-red-600 dark:text-red-400" />
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm/6 font-medium text-slate-900 dark:text-white">First name</label>
+                                <div class="mt-2">
+                                    <InputText @bind-Value="Input.FirstName"
+                                               id="Input.FirstName"
+                                               autocomplete="given-name"
+                                               class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-slate-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-400 sm:text-sm/6 dark:bg-white/5 dark:text-white dark:outline-white/10 dark:focus:outline-orange-400" />
+                                    <ValidationMessage For="() => Input.FirstName" class="mt-1 text-xs text-red-600 dark:text-red-400" />
+                                </div>
+                            </div>
+                            <div>
+                                <label class="block text-sm/6 font-medium text-slate-900 dark:text-white">Last name</label>
+                                <div class="mt-2">
+                                    <InputText @bind-Value="Input.LastName"
+                                               id="Input.LastName"
+                                               autocomplete="family-name"
+                                               class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-slate-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-400 sm:text-sm/6 dark:bg-white/5 dark:text-white dark:outline-white/10 dark:focus:outline-orange-400" />
+                                    <ValidationMessage For="() => Input.LastName" class="mt-1 text-xs text-red-600 dark:text-red-400" />
+                                </div>
+                            </div>
                         </div>
-                    </div>
 
-                    <!-- SUBMIT -->
-                    <div>
-                        <button type="submit"
-                                class="flex w-full justify-center rounded-md bg-indigo-400 px-3 py-1.5 text-sm/6 font-semibold text-white shadow-xs hover:bg-indigo-400/80 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-400 dark:bg-orange-400 dark:shadow-none dark:hover:bg-orange-400/80 dark:focus-visible:outline-orange-400">
-                            Create account
-                        </button>
-                    </div>
-                </EditForm>
-
-                <!-- SOCIAL (MATCH LOGIN EXACTLY) -->
-                <div class="mt-10">
-                    <div class="relative">
-                        <div class="absolute inset-0 flex items-center">
-                            <div class="w-full border-t border-gray-200 dark:border-gray-700"></div>
+                        <div>
+                            <label class="block text-sm/6 font-medium text-slate-900 dark:text-white">Password</label>
+                            <div class="mt-2">
+                                <InputText type="password"
+                                           @bind-Value="Input.Password"
+                                           id="Input.Password"
+                                           autocomplete="new-password"
+                                           placeholder="••••••••"
+                                           class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-slate-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-400 sm:text-sm/6 dark:bg-white/5 dark:text-white dark:outline-white/10 dark:placeholder:text-gray-500 dark:focus:outline-orange-400" />
+                                <ValidationMessage For="() => Input.Password" class="mt-1 text-xs text-red-600 dark:text-red-400" />
+                            </div>
                         </div>
-                        <div class="relative flex justify-center text-sm/6 font-medium">
-                            <span class="bg-white px-6 text-slate-900 dark:bg-neutral-950 dark:text-neutral-400">
-                                Or continue with
-                            </span>
-                        </div>
-                    </div>
 
-                    <div class="mt-6 grid grid-cols-2 gap-4">
-                        <!-- reuse your Google + GitHub buttons exactly -->
-                        <!-- (copy from login to keep pixel-perfect) -->
-                    </div>
-                </div>
+                        <div>
+                            <label class="block text-sm/6 font-medium text-slate-900 dark:text-white">Confirm password</label>
+                            <div class="mt-2">
+                                <InputText type="password"
+                                           @bind-Value="Input.ConfirmPassword"
+                                           id="Input.ConfirmPassword"
+                                           autocomplete="new-password"
+                                           placeholder="••••••••"
+                                           class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-slate-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-400 sm:text-sm/6 dark:bg-white/5 dark:text-white dark:outline-white/10 dark:placeholder:text-gray-500 dark:focus:outline-orange-400" />
+                                <ValidationMessage For="() => Input.ConfirmPassword" class="mt-1 text-xs text-red-600 dark:text-red-400" />
+                            </div>
+                        </div>
+
+                        <div>
+                            <button type="submit"
+                                    class="flex w-full justify-center rounded-md bg-indigo-400 px-3 py-1.5 text-sm/6 font-semibold text-white shadow-xs hover:bg-indigo-400/80 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-400 dark:bg-orange-400 dark:shadow-none dark:hover:bg-orange-400/80 dark:focus-visible:outline-orange-400">
+                                Create account
+                            </button>
+                        </div>
+                    </EditForm>
+                }
             </div>
         </div>
     </div>
 
-    <!-- RIGHT PANEL (IDENTICAL) -->
     <div class="relative hidden flex-1 lg:block">
         <img src="https://images.unsplash.com/photo-1496917756835-20cb06e75b4e?auto=format&fit=crop&w=1908&q=80"
              class="absolute inset-0 size-full object-cover" />
@@ -131,6 +159,8 @@
 
 @code {
     private IEnumerable<IdentityError>? identityErrors;
+    private ClientInvitation? _invitation;
+    private bool _tokenInvalid;
 
     private string? Message => identityErrors is null
         ? null
@@ -140,15 +170,52 @@
     private InputModel Input { get; set; } = new();
 
     [SupplyParameterFromQuery]
+    private string? Token { get; set; }
+
+    [SupplyParameterFromQuery]
     private string? ReturnUrl { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (string.IsNullOrWhiteSpace(Token))
+            return;
+
+        _invitation = await InvitationService.GetInvitationByTokenAsync(Token);
+
+        if (_invitation is null)
+        {
+            _tokenInvalid = true;
+            return;
+        }
+
+        Input.Email = _invitation.Email;
+        Input.FirstName = _invitation.FirstName;
+        Input.LastName = _invitation.LastName;
+    }
 
     public async Task RegisterUser()
     {
-        var user = Activator.CreateInstance<ApplicationUser>();
+        if (_invitation is null)
+        {
+            identityErrors = [new IdentityError { Description = "A valid invitation is required to register." }];
+            return;
+        }
 
-        await UserStore.SetUserNameAsync(user, Input.Email, CancellationToken.None);
+        var user = new ApplicationUser
+        {
+            EmailConfirmed = true,
+            FirstName = Input.FirstName,
+            LastName = Input.LastName,
+            CompanyName = _invitation.CompanyName,
+            ServiceType = _invitation.ServiceType,
+            ProjectDescription = _invitation.ProjectDescription,
+            Notes = _invitation.Notes,
+            InvitationId = _invitation.Id
+        };
+
+        await UserStore.SetUserNameAsync(user, _invitation.Email, CancellationToken.None);
         var emailStore = (IUserEmailStore<ApplicationUser>)UserStore;
-        await emailStore.SetEmailAsync(user, Input.Email, CancellationToken.None);
+        await emailStore.SetEmailAsync(user, _invitation.Email, CancellationToken.None);
 
         var result = await UserManager.CreateAsync(user, Input.Password);
 
@@ -158,19 +225,21 @@
             return;
         }
 
-        Logger.LogInformation("User created a new account.");
+        Logger.LogInformation("Client {Email} registered via invitation {Id}", _invitation.Email, _invitation.Id);
 
-        var userId = await UserManager.GetUserIdAsync(user);
-        var code = await UserManager.GenerateEmailConfirmationTokenAsync(user);
-        code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
+        await InvitationService.AcceptInvitationAsync(_invitation.Id, user.Id);
 
-        var callbackUrl = NavigationManager.GetUriWithQueryParameters(
-            "Account/ConfirmEmail",
-            new Dictionary<string, object?> { ["userId"] = userId, ["code"] = code });
+        try
+        {
+            await EmailService.SendWelcomeEmailAsync(user);
+            await EmailService.SendClientRegisteredNotificationAsync(user);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Post-registration emails failed for {Email}", user.Email);
+        }
 
-        await EmailSender.SendConfirmationLinkAsync(user, Input.Email, HtmlEncoder.Default.Encode(callbackUrl));
-
-        await SignInManager.SignInAsync(user, false);
+        await SignInManager.SignInAsync(user, isPersistent: false);
         RedirectManager.RedirectTo(ReturnUrl);
     }
 
@@ -179,6 +248,12 @@
         [Required]
         [EmailAddress]
         public string Email { get; set; } = "";
+
+        [Required]
+        public string FirstName { get; set; } = "";
+
+        [Required]
+        public string LastName { get; set; } = "";
 
         [Required]
         [DataType(DataType.Password)]

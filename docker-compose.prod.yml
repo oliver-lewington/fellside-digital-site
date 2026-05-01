@@ -9,6 +9,10 @@ services:
       - ConnectionStrings__DefaultConnection=${CONNECTIONSTRINGS__DEFAULTCONNECTION}
       - ADMIN_EMAIL=${ADMIN_EMAIL}
       - ADMIN_PASSWORD=${ADMIN_PASSWORD}
+      - Email__Username=${EMAIL__USERNAME}
+      - Email__Password=${EMAIL__PASSWORD}
+      - Email__FromAddress=${EMAIL__FROMADDRESS}
+      - Email__AdminEmail=${EMAIL__ADMINEMAIL}
       - ASPNETCORE_ENVIRONMENT=Production
     ports:
       - "8080:8080"

@@ -1,0 +1,225 @@
+@page "/Admin/Invitations/Create"
+@attribute [Authorize(Roles = "SiteAdmin")]
+
+@using System.ComponentModel.DataAnnotations
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Identity
+@using FellsideDigital.Data
+@using FellsideDigital.Services
+@using FellsideDigital.Components.Home
+
+@inject IInvitationService InvitationService
+@inject AuthenticationStateProvider AuthState
+@inject UserManager<ApplicationUser> UserManager
+@inject NavigationManager NavigationManager
+
+<PageTitle>New Invitation — Fellside Digital</PageTitle>
+
+<div class="min-h-screen bg-slate-50 dark:bg-neutral-950 pt-24 pb-12">
+    <div class="mx-auto max-w-2xl px-4 sm:px-6 lg:px-8">
+
+        <div class="mb-8">
+            <NavLink href="/Admin/Invitations"
+                     class="text-sm font-medium text-slate-500 dark:text-neutral-400 hover:text-slate-900 dark:hover:text-neutral-100">
+                ← Back to invitations
+            </NavLink>
+            <h1 class="mt-4 text-2xl font-bold text-slate-900 dark:text-neutral-100">New client invitation</h1>
+            <p class="mt-1 text-sm text-slate-500 dark:text-neutral-400">
+                Fill in the client details. They will receive an email with a link to set up their account.
+                The link expires in 7 days.
+            </p>
+        </div>
+
+        @if (!string.IsNullOrEmpty(_errorMessage))
+        {
+            <div class="mb-6 rounded-md bg-red-50 p-4 dark:bg-red-900/20">
+                <h3 class="text-sm font-medium text-red-800 dark:text-red-300 mb-1">Error</h3>
+                <p class="text-sm text-red-700 dark:text-red-400 mb-2">@_errorMessage</p>
+                @if (!string.IsNullOrEmpty(_emailErrorDetails))
+                {
+                    <details class="mt-2">
+                        <summary class="cursor-pointer text-xs font-medium text-red-600 dark:text-red-500 hover:underline">
+                            Technical details
+                        </summary>
+                        <p class="mt-2 text-xs text-red-600 dark:text-red-500 font-mono bg-red-100 dark:bg-red-900/40 p-2 rounded">
+                            @_emailErrorDetails
+                        </p>
+                        @if (_emailErrorDetails.Contains("Authentication unsuccessful") || _emailErrorDetails.Contains("5.7.57"))
+                        {
+                            <p class="mt-2 text-xs text-red-700 dark:text-red-400">
+                                <strong>Fix:</strong> Enable SMTP AUTH on your mailbox. Visit your Microsoft 365 admin centre:
+                                <ol class="list-decimal list-inside mt-1 space-y-1">
+                                    <li>Users → Active users</li>
+                                    <li>Select your mailbox</li>
+                                    <li>Mail → Manage email apps</li>
+                                    <li>Enable <strong>Authenticated SMTP</strong></li>
+                                    <li>Save and try again (may take a few minutes)</li>
+                                </ol>
+                            </p>
+                        }
+                    </details>
+                }
+            </div>
+        }
+
+        <div class="rounded-xl border border-slate-200 dark:border-white/10 bg-white dark:bg-neutral-900 shadow-sm p-6 sm:p-8">
+            <EditForm Model="Input" OnValidSubmit="CreateInvitationAsync" class="space-y-6">
+                <DataAnnotationsValidator />
+
+                <div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
+                    <div>
+                        <label class="block text-sm font-medium text-slate-900 dark:text-neutral-100 mb-1.5">First name <span class="text-red-500">*</span></label>
+                        <InputText @bind-Value="Input.FirstName"
+                                   placeholder="Jane"
+                                   class="@InputClass" />
+                        <ValidationMessage For="() => Input.FirstName" class="mt-1 text-xs text-red-600 dark:text-red-400" />
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-slate-900 dark:text-neutral-100 mb-1.5">Last name <span class="text-red-500">*</span></label>
+                        <InputText @bind-Value="Input.LastName"
+                                   placeholder="Smith"
+                                   class="@InputClass" />
+                        <ValidationMessage For="() => Input.LastName" class="mt-1 text-xs text-red-600 dark:text-red-400" />
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-slate-900 dark:text-neutral-100 mb-1.5">Email address <span class="text-red-500">*</span></label>
+                    <InputText @bind-Value="Input.Email"
+                               type="email"
+                               placeholder="jane@company.com"
+                               class="@InputClass" />
+                    <ValidationMessage For="() => Input.Email" class="mt-1 text-xs text-red-600 dark:text-red-400" />
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-slate-900 dark:text-neutral-100 mb-1.5">Company name <span class="text-red-500">*</span></label>
+                    <InputText @bind-Value="Input.CompanyName"
+                               placeholder="Acme Ltd"
+                               class="@InputClass" />
+                    <ValidationMessage For="() => Input.CompanyName" class="mt-1 text-xs text-red-600 dark:text-red-400" />
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-slate-900 dark:text-neutral-100 mb-1.5">Service type <span class="text-red-500">*</span></label>
+                    <InputSelect @bind-Value="Input.ServiceType" class="@InputClass">
+                        <option value="">Select a service…</option>
+                        @foreach (var service in HomeData.Services)
+                        {
+                            <option value="@service.Title">@service.Title</option>
+                        }
+                    </InputSelect>
+                    <ValidationMessage For="() => Input.ServiceType" class="mt-1 text-xs text-red-600 dark:text-red-400" />
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-slate-900 dark:text-neutral-100 mb-1.5">Project description <span class="text-red-500">*</span></label>
+                    <InputTextArea @bind-Value="Input.ProjectDescription"
+                                   rows="4"
+                                   placeholder="Brief description of the project and what you're building for this client…"
+                                   class="@InputClass" />
+                    <ValidationMessage For="() => Input.ProjectDescription" class="mt-1 text-xs text-red-600 dark:text-red-400" />
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-slate-900 dark:text-neutral-100 mb-1.5">
+                        Internal notes
+                        <span class="ml-1 text-xs font-normal text-slate-400 dark:text-neutral-500">(not shown to client)</span>
+                    </label>
+                    <InputTextArea @bind-Value="Input.Notes"
+                                   rows="3"
+                                   placeholder="Budget, timeline, key contacts, anything for your own reference…"
+                                   class="@InputClass" />
+                </div>
+
+                <div class="flex items-center justify-end gap-4 pt-2">
+                    <NavLink href="/Admin/Invitations"
+                             class="text-sm font-medium text-slate-500 dark:text-neutral-400 hover:text-slate-900 dark:hover:text-neutral-100">
+                        Cancel
+                    </NavLink>
+                    <button type="submit"
+                            disabled="@_submitting"
+                            class="inline-flex items-center gap-2 rounded-md bg-indigo-400 dark:bg-orange-400 px-5 py-2 text-sm font-semibold text-white shadow-sm hover:opacity-90 disabled:opacity-60 disabled:cursor-not-allowed focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-400 dark:focus-visible:outline-orange-400 transition">
+                        @if (_submitting)
+                        {
+                            <span>Sending…</span>
+                        }
+                        else
+                        {
+                            <span>Send invitation</span>
+                        }
+                    </button>
+                </div>
+            </EditForm>
+        </div>
+    </div>
+</div>
+
+@code {
+    private InputModel Input { get; set; } = new();
+    private string? _errorMessage;
+    private string? _emailErrorDetails;
+    private bool _submitting;
+
+    private const string InputClass = "block w-full rounded-md bg-white px-3 py-1.5 text-sm text-slate-900 outline-1 -outline-offset-1 outline-slate-300 placeholder:text-slate-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-400 dark:bg-white/5 dark:text-neutral-100 dark:outline-white/10 dark:placeholder:text-neutral-500 dark:focus:outline-orange-400";
+
+    private async Task CreateInvitationAsync()
+    {
+        _submitting = true;
+        _errorMessage = null;
+        _emailErrorDetails = null;
+
+        try
+        {
+            var authState = await AuthState.GetAuthenticationStateAsync();
+            var adminUser = await UserManager.GetUserAsync(authState.User);
+            if (adminUser is null)
+            {
+                _errorMessage = "Could not determine the current admin user.";
+                return;
+            }
+
+            var model = new ClientInvitation
+            {
+                Email = Input.Email,
+                FirstName = Input.FirstName,
+                LastName = Input.LastName,
+                CompanyName = Input.CompanyName,
+                ServiceType = Input.ServiceType,
+                ProjectDescription = Input.ProjectDescription,
+                Notes = Input.Notes
+            };
+
+            var result = await InvitationService.CreateInvitationAsync(model, adminUser.Id);
+            
+            if (!string.IsNullOrEmpty(result.EmailError))
+            {
+                _errorMessage = "Invitation created but email failed to send.";
+                _emailErrorDetails = result.EmailError;
+                return;
+            }
+
+            NavigationManager.NavigateTo("/Admin/Invitations?success=1");
+        }
+        catch (Exception ex)
+        {
+            _errorMessage = "Failed to create invitation. Please try again.";
+            _emailErrorDetails = ex.Message;
+        }
+        finally
+        {
+            _submitting = false;
+        }
+    }
+
+    private sealed class InputModel
+    {
+        [Required] public string FirstName { get; set; } = "";
+        [Required] public string LastName { get; set; } = "";
+        [Required, EmailAddress] public string Email { get; set; } = "";
+        [Required] public string CompanyName { get; set; } = "";
+        [Required] public string ServiceType { get; set; } = "";
+        [Required] public string ProjectDescription { get; set; } = "";
+        public string Notes { get; set; } = "";
+    }
+}

@@ -1,0 +1,145 @@
+@page "/Admin/Invitations"
+@attribute [Authorize(Roles = "SiteAdmin")]
+
+@using Microsoft.AspNetCore.Authorization
+@using FellsideDigital.Data
+@using FellsideDigital.Services
+
+@inject IInvitationService InvitationService
+@inject NavigationManager NavigationManager
+@inject IJSRuntime JS
+
+<PageTitle>Client Invitations — Fellside Digital</PageTitle>
+
+<div class="min-h-screen bg-slate-50 dark:bg-neutral-950 pt-24 pb-12">
+    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+
+        <div class="sm:flex sm:items-center sm:justify-between mb-8">
+            <div>
+                <h1 class="text-2xl font-bold text-slate-900 dark:text-neutral-100">Client Invitations</h1>
+                <p class="mt-1 text-sm text-slate-500 dark:text-neutral-400">
+                    Create and manage invitation links for new clients.
+                </p>
+            </div>
+            <div class="mt-4 sm:mt-0">
+                <NavLink href="/Admin/Invitations/Create"
+                         class="inline-flex items-center gap-2 rounded-md bg-indigo-400 dark:bg-orange-400 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:opacity-90 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-400 dark:focus-visible:outline-orange-400 transition">
+                    + New invitation
+                </NavLink>
+            </div>
+        </div>
+
+        @if (_successMessage is not null)
+        {
+            <div class="mb-6 rounded-xl bg-indigo-400/10 dark:bg-orange-400/10 p-4 ring-1 ring-indigo-400/30 dark:ring-orange-400/30">
+                <p class="text-sm text-indigo-500 dark:text-orange-400">@_successMessage</p>
+            </div>
+        }
+
+        @if (_invitations is null)
+        {
+            <p class="text-sm text-slate-500 dark:text-neutral-400">Loading...</p>
+        }
+        else if (_invitations.Count == 0)
+        {
+            <div class="rounded-xl border border-dashed border-slate-300 dark:border-white/10 p-12 text-center bg-white dark:bg-neutral-900">
+                <p class="text-sm text-slate-500 dark:text-neutral-400">No invitations yet.</p>
+                <NavLink href="/Admin/Invitations/Create"
+                         class="mt-4 inline-flex items-center text-sm font-semibold text-indigo-400 dark:text-orange-400 hover:underline">
+                    Create your first invitation →
+                </NavLink>
+            </div>
+        }
+        else
+        {
+            <div class="overflow-hidden rounded-xl border border-slate-200 dark:border-white/10 bg-white dark:bg-neutral-900 shadow-sm">
+                <table class="min-w-full divide-y divide-slate-200 dark:divide-white/10">
+                    <thead>
+                        <tr class="bg-slate-50 dark:bg-white/5">
+                            <th class="px-6 py-3 text-left text-xs font-semibold text-slate-500 dark:text-neutral-400 uppercase tracking-wider">Client</th>
+                            <th class="px-6 py-3 text-left text-xs font-semibold text-slate-500 dark:text-neutral-400 uppercase tracking-wider hidden sm:table-cell">Company</th>
+                            <th class="px-6 py-3 text-left text-xs font-semibold text-slate-500 dark:text-neutral-400 uppercase tracking-wider hidden md:table-cell">Service</th>
+                            <th class="px-6 py-3 text-left text-xs font-semibold text-slate-500 dark:text-neutral-400 uppercase tracking-wider">Status</th>
+                            <th class="px-6 py-3 text-left text-xs font-semibold text-slate-500 dark:text-neutral-400 uppercase tracking-wider hidden lg:table-cell">Expires</th>
+                            <th class="px-6 py-3 text-right text-xs font-semibold text-slate-500 dark:text-neutral-400 uppercase tracking-wider">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-100 dark:divide-white/5">
+                        @foreach (var inv in _invitations)
+                        {
+                            <tr class="hover:bg-slate-50 dark:hover:bg-white/5 transition-colors">
+                                <td class="px-6 py-4">
+                                    <div class="text-sm font-medium text-slate-900 dark:text-neutral-100">@inv.FirstName @inv.LastName</div>
+                                    <div class="text-xs text-slate-500 dark:text-neutral-400">@inv.Email</div>
+                                </td>
+                                <td class="px-6 py-4 text-sm text-slate-700 dark:text-neutral-300 hidden sm:table-cell">@inv.CompanyName</td>
+                                <td class="px-6 py-4 text-sm text-slate-700 dark:text-neutral-300 hidden md:table-cell">@inv.ServiceType</td>
+                                <td class="px-6 py-4">
+                                    <span class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium @StatusBadgeClass(inv.Status)">
+                                        @inv.Status
+                                    </span>
+                                </td>
+                                <td class="px-6 py-4 text-sm text-slate-500 dark:text-neutral-400 hidden lg:table-cell">
+                                    @inv.ExpiresAt.ToLocalTime().ToString("d MMM yyyy")
+                                </td>
+                                <td class="px-6 py-4 text-right">
+                                    <div class="flex items-center justify-end gap-2">
+                                        @if (inv.Status == InvitationStatus.Pending)
+                                        {
+                                            <button @onclick="() => CopyLink(inv)"
+                                                    class="text-xs font-medium text-indigo-400 dark:text-orange-400 hover:underline">
+                                                Copy link
+                                            </button>
+                                            <button @onclick="() => RevokeAsync(inv.Id)"
+                                                    class="text-xs font-medium text-red-500 hover:underline">
+                                                Revoke
+                                            </button>
+                                        }
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+    </div>
+</div>
+
+@code {
+    private List<ClientInvitation>? _invitations;
+    private string? _successMessage;
+
+    [SupplyParameterFromQuery]
+    private string? Success { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (Success == "1")
+            _successMessage = "Invitation sent successfully.";
+
+        _invitations = await InvitationService.GetAllInvitationsAsync();
+    }
+
+    private async Task CopyLink(ClientInvitation inv)
+    {
+        var url = NavigationManager.ToAbsoluteUri(
+            $"/Account/Register?token={Uri.EscapeDataString(inv.Token)}").ToString();
+        await JS.InvokeVoidAsync("navigator.clipboard.writeText", url);
+    }
+
+    private async Task RevokeAsync(Guid id)
+    {
+        await InvitationService.RevokeInvitationAsync(id);
+        _invitations = await InvitationService.GetAllInvitationsAsync();
+    }
+
+    private static string StatusBadgeClass(InvitationStatus status) => status switch
+    {
+        InvitationStatus.Pending  => "bg-yellow-50 text-yellow-700 ring-1 ring-yellow-600/20 dark:bg-yellow-400/10 dark:text-yellow-400",
+        InvitationStatus.Accepted => "bg-green-50 text-green-700 ring-1 ring-green-600/20 dark:bg-green-400/10 dark:text-green-400",
+        InvitationStatus.Expired  => "bg-slate-100 text-slate-600 ring-1 ring-slate-500/20 dark:bg-white/5 dark:text-neutral-400",
+        InvitationStatus.Revoked  => "bg-red-50 text-red-700 ring-1 ring-red-600/20 dark:bg-red-400/10 dark:text-red-400",
+        _ => ""
+    };
+}

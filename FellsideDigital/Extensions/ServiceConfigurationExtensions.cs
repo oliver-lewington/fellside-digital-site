@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.DataProtection;
+﻿using FellsideDigital.Models;
+using FellsideDigital.Services;
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Http.Features;
 using System.Security.Cryptography.X509Certificates;
 
@@ -59,6 +61,19 @@ public static class ServiceConfigurationExtensions
             options.Cookie.SameSite = SameSiteMode.Lax;
         });
 
+        return services;
+    }
+
+    public static IServiceCollection ConfigureEmailService(this IServiceCollection services, IConfiguration config)
+    {
+        services.Configure<EmailSettings>(config.GetSection("Email"));
+        services.AddSingleton<EmailService>();
+        return services;
+    }
+
+    public static IServiceCollection ConfigureInvitationServices(this IServiceCollection services)
+    {
+        services.AddScoped<IInvitationService, InvitationService>();
         return services;
     }
 

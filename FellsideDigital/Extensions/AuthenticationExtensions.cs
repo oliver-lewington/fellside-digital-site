@@ -1,5 +1,6 @@
 ﻿using FellsideDigital.Components.Account;
 using FellsideDigital.Data;
+using FellsideDigital.Services;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
@@ -81,7 +82,7 @@ public static class AuthenticationExtensions
             };
         });
 
-        services.AddSingleton<IEmailSender<ApplicationUser>, IdentityNoOpEmailSender>();
+        services.AddSingleton<IEmailSender<ApplicationUser>>(sp => sp.GetRequiredService<EmailService>());
 
         return services;
     }
