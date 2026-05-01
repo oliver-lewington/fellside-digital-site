@@ -1,0 +1,80 @@
+# CLAUDE.md
+
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+
+## Commands
+
+**Run in development:**
+```bash
+dotnet run --launch-profile http
+# App at http://localhost:5185
+```
+
+**Run with Docker (full stack, includes PostgreSQL):**
+```bash
+docker-compose up --build
+# App at http://localhost:8080
+```
+
+**Run with Docker (production, requires external DB):**
+```bash
+docker-compose -f docker-compose.prod.yml up --build
+```
+
+**Database migrations:**
+```bash
+dotnet ef migrations add <MigrationName> --project FellsideDigital
+dotnet ef database update --project FellsideDigital
+```
+
+**Tailwind CSS** — runs automatically on `dotnet build` via MSBuild targets, but to run manually:
+```bash
+cd FellsideDigital
+npm install
+npx tailwindcss -i ./Styles/tailwind.css -o ./wwwroot/css/tailwind.css
+```
+
+There are no test projects in this solution.
+
+## Required Environment Variables
+
+| Variable | Purpose |
+|---|---|
+| `ADMIN_EMAIL` | Seeds the initial admin user on first boot |
+| `ADMIN_PASSWORD` | Password for the seeded admin user |
+| `DATABASE_URL` | Railway-style `postgres://` URI (overrides connection string) |
+| `ConnectionStrings__DefaultConnection` | Standard .NET connection string (alternative to DATABASE_URL) |
+
+## Architecture
+
+### Startup Composition Pattern
+
+`Program.cs` is intentionally minimal (3 meaningful lines). All service registration and middleware lives in `Extensions/`:
+
+- `StartupCompositionExtensions.cs` — orchestrates the other extensions; also contains `ApplyStartupTasksAsync()` (runs migrations + admin seeding) and `UseFellsideDigitalPlatform()` (middleware pipeline)
+- `AuthenticationExtensions.cs` — ASP.NET Identity config, cookie settings, registers `IdentityNoOpEmailSender`
+- `DatabaseExtensions.cs` — PostgreSQL via Npgsql; parses Railway's `DATABASE_URL` env var format
+- `ServiceConfigurationExtensions.cs` — HTTP context, form options (50 MB body limit), data protection, session, logging
+
+New services should be added as extension methods in this `Extensions/` folder and called from `AddFellsideDigitalPlatform()`.
+
+### Authentication & Roles
+
+- Two roles: `SiteAdmin` and `AuctionAdmin`, created automatically by `AdminUserSeeder` at startup when `ADMIN_EMAIL`/`ADMIN_PASSWORD` env vars are present.
+- `RequireConfirmedAccount = true` is set, but `IdentityNoOpEmailSender` is registered — **no emails are actually sent**. In development, `RegisterConfirmation.razor` renders a clickable confirmation link directly on screen.
+- Cookie auth: 14-day sliding expiration, `SameSite=Lax`, always `Secure`. API routes (`/api/*`) return 401/403 JSON instead of redirecting.
+- Security stamps are revalidated every 30 minutes via `IdentityRevalidatingAuthenticationStateProvider`.
+
+### Data Layer
+
+- `FellsideDigitalDbContext` extends `IdentityDbContext<ApplicationUser>`. The `Customers` DbSet is a semantic alias for the Identity users table.
+- `ApplicationUser` currently has no custom properties beyond the base `IdentityUser`.
+- Migrations apply automatically on startup — no manual `dotnet ef database update` needed in normal operation.
+- `HomeModels.cs` contains hardcoded static data for the landing page (projects, services, testimonials, FAQs) — this is not database-driven.
+
+### Blazor Rendering
+
+- All components use **Interactive Server** render mode. The router is in `Routes.razor` with `MainLayout` as the default layout.
+- Most pages inherit from `PageBase.cs`, which provides a `LoadingScreen` overlay reference and `FinishLoading()` lifecycle hook.
+- The landing page (`/`) delegates scroll and entrance animations to JavaScript (Anime.js) via JS interop on first render.
+- The `/auth` route exists as a protected page requiring `[Authorize]` and is used for dev/testing authenticated state.
