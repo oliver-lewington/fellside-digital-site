@@ -3,6 +3,7 @@ using System;
 using FellsideDigital.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace FellsideDigital.Data.Migrations
 {
     [DbContext(typeof(FellsideDigitalDbContext))]
-    partial class FellsideDigitalDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260502173747_AddClientPortal")]
+    partial class AddClientPortal
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

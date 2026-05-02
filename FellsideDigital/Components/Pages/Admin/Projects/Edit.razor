@@ -1,0 +1,184 @@
+@page "/Admin/Projects/{Id:guid}/Edit"
+@attribute [Authorize(Roles = "SiteAdmin")]
+
+@using System.ComponentModel.DataAnnotations
+@using Microsoft.AspNetCore.Authorization
+@using FellsideDigital.Data
+@using FellsideDigital.Services
+
+@inject IProjectService ProjectService
+@inject NavigationManager NavigationManager
+
+<PageTitle>Edit Project — Fellside Digital Admin</PageTitle>
+
+<div class="min-h-screen bg-slate-50 dark:bg-neutral-950 pt-24 pb-12">
+    <div class="mx-auto max-w-2xl px-4 sm:px-6 lg:px-8">
+
+        <div class="mb-8">
+            <NavLink href="@($"/Admin/Projects/{Id}")"
+                     class="text-sm font-medium text-slate-500 dark:text-neutral-400 hover:text-slate-900 dark:hover:text-neutral-100">
+                ← Back to project
+            </NavLink>
+            <h1 class="mt-4 text-2xl font-bold text-slate-900 dark:text-neutral-100">Edit project</h1>
+        </div>
+
+        @if (_project is null)
+        {
+            <p class="text-sm text-slate-500 dark:text-neutral-400">Loading…</p>
+        }
+        else
+        {
+            @if (!string.IsNullOrEmpty(_errorMessage))
+            {
+                <div class="mb-6 rounded-md bg-red-50 p-4 dark:bg-red-900/20">
+                    <p class="text-sm text-red-700 dark:text-red-400">@_errorMessage</p>
+                </div>
+            }
+
+            <div class="rounded-xl border border-slate-200 dark:border-white/10 bg-white dark:bg-neutral-900 shadow-sm p-6 sm:p-8">
+                <EditForm Model="Input" OnValidSubmit="SaveAsync" class="space-y-6">
+                    <DataAnnotationsValidator />
+
+                    <div>
+                        <label class="block text-sm font-medium text-slate-900 dark:text-neutral-100 mb-1.5">
+                            Project name <span class="text-red-500">*</span>
+                        </label>
+                        <InputText @bind-Value="Input.Name" class="@InputClass" />
+                        <ValidationMessage For="() => Input.Name" class="mt-1 text-xs text-red-600 dark:text-red-400" />
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-slate-900 dark:text-neutral-100 mb-1.5">
+                            Description <span class="text-red-500">*</span>
+                        </label>
+                        <InputTextArea @bind-Value="Input.Description" rows="3" class="@InputClass" />
+                        <ValidationMessage For="() => Input.Description" class="mt-1 text-xs text-red-600 dark:text-red-400" />
+                    </div>
+
+                    <div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
+                        <div>
+                            <label class="block text-sm font-medium text-slate-900 dark:text-neutral-100 mb-1.5">Type</label>
+                            <InputSelect @bind-Value="Input.Type" class="@InputClass">
+                                <option value="@ProjectType.Website">Website</option>
+                                <option value="@ProjectType.Automation">Automation</option>
+                            </InputSelect>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-slate-900 dark:text-neutral-100 mb-1.5">Status</label>
+                            <InputSelect @bind-Value="Input.Status" class="@InputClass">
+                                @foreach (var s in Enum.GetValues<ProjectStatus>())
+                                {
+                                    <option value="@s">@StatusLabel(s)</option>
+                                }
+                            </InputSelect>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-slate-900 dark:text-neutral-100 mb-1.5">
+                            Railway preview URL
+                            <span class="ml-1 text-xs font-normal text-slate-400 dark:text-neutral-500">(iframe embed)</span>
+                        </label>
+                        <InputText @bind-Value="Input.PreviewUrl" placeholder="https://myapp.up.railway.app" class="@InputClass" />
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-slate-900 dark:text-neutral-100 mb-1.5">
+                            Railway project URL
+                            <span class="ml-1 text-xs font-normal text-slate-400 dark:text-neutral-500">(external link)</span>
+                        </label>
+                        <InputText @bind-Value="Input.ProjectUrl" placeholder="https://railway.app/project/..." class="@InputClass" />
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-slate-900 dark:text-neutral-100 mb-1.5">Deployment notes</label>
+                        <InputTextArea @bind-Value="Input.DeploymentNotes" rows="2" class="@InputClass" />
+                    </div>
+
+                    <div class="flex items-center justify-end gap-4 pt-2">
+                        <NavLink href="@($"/Admin/Projects/{Id}")"
+                                 class="text-sm font-medium text-slate-500 dark:text-neutral-400 hover:text-slate-900 dark:hover:text-neutral-100">
+                            Cancel
+                        </NavLink>
+                        <button type="submit" disabled="@_submitting"
+                                class="inline-flex items-center gap-2 rounded-md bg-indigo-400 dark:bg-orange-400 px-5 py-2 text-sm font-semibold text-white shadow-sm hover:opacity-90 disabled:opacity-60 disabled:cursor-not-allowed transition">
+                            @(_submitting ? "Saving…" : "Save changes")
+                        </button>
+                    </div>
+                </EditForm>
+            </div>
+        }
+    </div>
+</div>
+
+@code {
+    [Parameter] public Guid Id { get; set; }
+
+    private ClientProject? _project;
+    private InputModel Input { get; set; } = new();
+    private string? _errorMessage;
+    private bool _submitting;
+
+    private const string InputClass = "block w-full rounded-md bg-white px-3 py-1.5 text-sm text-slate-900 outline-1 -outline-offset-1 outline-slate-300 placeholder:text-slate-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-400 dark:bg-white/5 dark:text-neutral-100 dark:outline-white/10 dark:placeholder:text-neutral-500 dark:focus:outline-orange-400";
+
+    protected override async Task OnInitializedAsync()
+    {
+        _project = await ProjectService.GetByIdAsync(Id);
+        if (_project is not null)
+        {
+            Input.Name = _project.Name;
+            Input.Description = _project.Description;
+            Input.Type = _project.Type;
+            Input.Status = _project.Status;
+            Input.PreviewUrl = _project.PreviewUrl;
+            Input.ProjectUrl = _project.ProjectUrl;
+            Input.DeploymentNotes = _project.DeploymentNotes;
+        }
+    }
+
+    private async Task SaveAsync()
+    {
+        if (_project is null) return;
+        _submitting = true;
+        _errorMessage = null;
+        try
+        {
+            _project.Name = Input.Name;
+            _project.Description = Input.Description;
+            _project.Type = Input.Type;
+            _project.Status = Input.Status;
+            _project.PreviewUrl = string.IsNullOrWhiteSpace(Input.PreviewUrl) ? null : Input.PreviewUrl.Trim();
+            _project.ProjectUrl = string.IsNullOrWhiteSpace(Input.ProjectUrl) ? null : Input.ProjectUrl.Trim();
+            _project.DeploymentNotes = string.IsNullOrWhiteSpace(Input.DeploymentNotes) ? null : Input.DeploymentNotes.Trim();
+
+            await ProjectService.UpdateAsync(_project);
+            NavigationManager.NavigateTo($"/Admin/Projects/{Id}");
+        }
+        catch (Exception ex)
+        {
+            _errorMessage = $"Failed to save: {ex.Message}";
+        }
+        finally
+        {
+            _submitting = false;
+        }
+    }
+
+    private static string StatusLabel(ProjectStatus s) => s switch
+    {
+        ProjectStatus.InProgress => "In Progress",
+        ProjectStatus.OnHold => "On Hold",
+        _ => s.ToString()
+    };
+
+    private sealed class InputModel
+    {
+        [Required] public string Name { get; set; } = "";
+        [Required] public string Description { get; set; } = "";
+        public ProjectType Type { get; set; } = ProjectType.Website;
+        public ProjectStatus Status { get; set; } = ProjectStatus.Pending;
+        public string? PreviewUrl { get; set; }
+        public string? ProjectUrl { get; set; }
+        public string? DeploymentNotes { get; set; }
+    }
+}

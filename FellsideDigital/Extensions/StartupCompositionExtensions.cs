@@ -21,7 +21,8 @@ public static class StartupCompositionExtensions
             .ConfigureHttp()
             .ConfigureFormOptions()
             .ConfigureEmailService(configuration)
-            .ConfigureInvitationServices();
+            .ConfigureInvitationServices()
+            .ConfigurePortalServices();
 
         // Required when running behind reverse proxies/load balancers (containers, cloud).
         services.Configure<ForwardedHeadersOptions>(options =>

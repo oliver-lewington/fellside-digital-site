@@ -1,0 +1,250 @@
+@page "/Portal/Projects/{Id:guid}"
+@attribute [Authorize]
+@layout PortalLayout
+
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Identity
+@using FellsideDigital.Data
+@using FellsideDigital.Services
+@using FellsideDigital.Components.Layout
+
+@inject IProjectService ProjectService
+@inject AuthenticationStateProvider AuthState
+@inject UserManager<ApplicationUser> UserManager
+@inject NavigationManager NavigationManager
+
+<PageTitle>@(_project?.Name ?? "Project") — Fellside Digital Portal</PageTitle>
+
+@if (_project is null)
+{
+    <p class="text-sm text-gray-400 dark:text-gray-500">Loading…</p>
+}
+else if (_notFound)
+{
+    <p class="text-sm text-gray-400 dark:text-gray-500">Project not found.</p>
+}
+else
+{
+    <!-- Header -->
+    <div class="mb-8 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+        <div>
+            <NavLink href="/Portal/Projects"
+                     class="text-sm font-medium text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white">
+                ← My projects
+            </NavLink>
+            <div class="mt-2 flex items-center gap-3 flex-wrap">
+                <h1 class="text-2xl font-bold text-gray-900 dark:text-white">@_project.Name</h1>
+                <span class="inline-flex items-center rounded-full px-3 py-1 text-xs font-medium @StatusBadgeClass(_project.Status)">
+                    @StatusLabel(_project.Status)
+                </span>
+                <span class="inline-flex items-center rounded-full px-3 py-1 text-xs font-medium bg-gray-100 text-gray-600 dark:bg-white/5 dark:text-gray-400">
+                    @_project.Type
+                </span>
+            </div>
+        </div>
+        @if (!string.IsNullOrEmpty(_project.ProjectUrl))
+        {
+            <a href="@_project.ProjectUrl" target="_blank" rel="noopener"
+               class="inline-flex items-center gap-2 rounded-md bg-indigo-400 dark:bg-orange-400 px-4 py-2 text-sm font-semibold text-white hover:opacity-90 transition shrink-0">
+                <svg class="size-4" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 6H5.25A2.25 2.25 0 0 0 3 8.25v10.5A2.25 2.25 0 0 0 5.25 21h10.5A2.25 2.25 0 0 0 18 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25" />
+                </svg>
+                View live site
+            </a>
+        }
+    </div>
+
+    <div class="grid grid-cols-1 gap-8 lg:grid-cols-3">
+        <div class="lg:col-span-2 space-y-8">
+
+            <!-- Railway preview iframe -->
+            @if (!string.IsNullOrEmpty(_project.PreviewUrl))
+            {
+                <div class="rounded-xl border border-gray-200 dark:border-white/10 overflow-hidden bg-white dark:bg-neutral-900 shadow-sm">
+                    <div class="flex items-center justify-between px-4 py-3 border-b border-gray-100 dark:border-white/10 bg-gray-50 dark:bg-white/5">
+                        <div class="flex items-center gap-2">
+                            <div class="size-3 rounded-full bg-red-400"></div>
+                            <div class="size-3 rounded-full bg-yellow-400"></div>
+                            <div class="size-3 rounded-full bg-green-400"></div>
+                        </div>
+                        <span class="text-xs text-gray-400 dark:text-gray-500 truncate max-w-xs">@_project.PreviewUrl</span>
+                        <a href="@_project.PreviewUrl" target="_blank" rel="noopener"
+                           class="text-xs font-medium text-indigo-400 dark:text-orange-400 hover:underline">
+                            Open ↗
+                        </a>
+                    </div>
+                    <iframe src="@_project.PreviewUrl"
+                            class="w-full h-96 lg:h-[520px]"
+                            title="@_project.Name preview"
+                            loading="lazy"
+                            sandbox="allow-scripts allow-same-origin allow-forms allow-popups">
+                    </iframe>
+                </div>
+            }
+
+            <!-- Project details -->
+            <div class="rounded-xl border border-gray-200 dark:border-white/10 bg-white dark:bg-neutral-900 shadow-sm overflow-hidden">
+                <div class="px-6 py-4 border-b border-gray-100 dark:border-white/10">
+                    <h2 class="text-sm font-semibold text-gray-900 dark:text-white">Project details</h2>
+                </div>
+                <dl class="grid grid-cols-1 sm:grid-cols-2">
+                    <div class="border-t border-gray-100 px-6 py-5 sm:col-span-1 dark:border-white/10">
+                        <dt class="text-sm/6 font-medium text-gray-900 dark:text-white">Service type</dt>
+                        <dd class="mt-1 text-sm/6 text-gray-700 sm:mt-2 dark:text-gray-400">@_project.Type</dd>
+                    </div>
+                    <div class="border-t border-gray-100 px-6 py-5 sm:col-span-1 dark:border-white/10">
+                        <dt class="text-sm/6 font-medium text-gray-900 dark:text-white">Project started</dt>
+                        <dd class="mt-1 text-sm/6 text-gray-700 sm:mt-2 dark:text-gray-400">@_project.CreatedAt.ToLocalTime().ToString("d MMMM yyyy")</dd>
+                    </div>
+                    <div class="border-t border-gray-100 px-6 py-5 sm:col-span-2 dark:border-white/10">
+                        <dt class="text-sm/6 font-medium text-gray-900 dark:text-white">Description</dt>
+                        <dd class="mt-1 text-sm/6 text-gray-700 sm:mt-2 dark:text-gray-400">@_project.Description</dd>
+                    </div>
+                    @if (!string.IsNullOrEmpty(_project.DeploymentNotes))
+                    {
+                        <div class="border-t border-gray-100 px-6 py-5 sm:col-span-2 dark:border-white/10">
+                            <dt class="text-sm/6 font-medium text-gray-900 dark:text-white">Deployment notes</dt>
+                            <dd class="mt-1 text-sm/6 text-gray-700 sm:mt-2 dark:text-gray-400">@_project.DeploymentNotes</dd>
+                        </div>
+                    }
+                    @if (_project.Invoices.Any())
+                    {
+                        <div class="border-t border-gray-100 px-6 py-5 sm:col-span-2 dark:border-white/10">
+                            <dt class="text-sm/6 font-medium text-gray-900 dark:text-white">Invoices</dt>
+                            <dd class="mt-2 text-sm text-gray-900 dark:text-white">
+                                <ul role="list" class="divide-y divide-gray-100 rounded-md border border-gray-200 dark:divide-white/5 dark:border-white/10">
+                                    @foreach (var inv in _project.Invoices.OrderByDescending(i => i.IssuedAt))
+                                    {
+                                        <li class="flex items-center justify-between py-3 pr-5 pl-4 text-sm/6">
+                                            <div class="flex w-0 flex-1 items-center gap-3">
+                                                <svg class="size-5 shrink-0 text-gray-400 dark:text-gray-500" viewBox="0 0 20 20" fill="currentColor">
+                                                    <path fill-rule="evenodd" clip-rule="evenodd" d="M15.621 4.379a3 3 0 0 0-4.242 0l-7 7a3 3 0 0 0 4.241 4.243h.001l.497-.5a.75.75 0 0 1 1.064 1.057l-.498.501-.002.002a4.5 4.5 0 0 1-6.364-6.364l7-7a4.5 4.5 0 0 1 6.368 6.36l-3.455 3.553A2.625 2.625 0 1 1 9.52 9.52l3.45-3.451a.75.75 0 1 1 1.061 1.06l-3.45 3.451a1.125 1.125 0 0 0 1.587 1.595l3.454-3.553a3 3 0 0 0 0-4.242Z" />
+                                                </svg>
+                                                <div class="min-w-0 flex-1">
+                                                    <span class="truncate font-medium text-gray-900 dark:text-white">@inv.FileName</span>
+                                                    <span class="ml-3 shrink-0 text-gray-400 dark:text-gray-500">@inv.Currency @inv.Amount.ToString("N2")</span>
+                                                </div>
+                                            </div>
+                                            <div class="ml-4 flex items-center gap-3 shrink-0">
+                                                <span class="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium @InvoiceBadgeClass(inv.Status)">
+                                                    @inv.Status
+                                                </span>
+                                                @if (!string.IsNullOrEmpty(inv.FilePath))
+                                                {
+                                                    <a href="@inv.FilePath" download="@inv.FileName"
+                                                       class="font-medium text-indigo-400 hover:text-indigo-300 dark:text-orange-400 dark:hover:text-orange-300">
+                                                        Download
+                                                    </a>
+                                                }
+                                            </div>
+                                        </li>
+                                    }
+                                </ul>
+                            </dd>
+                        </div>
+                    }
+                </dl>
+            </div>
+        </div>
+
+        <!-- Right: activity feed -->
+        <div>
+            <h2 class="text-sm font-semibold text-gray-900 dark:text-white mb-6">Project updates</h2>
+            @if (!_project.StatusUpdates.Any())
+            {
+                <p class="text-sm text-gray-400 dark:text-gray-500">No updates yet.</p>
+            }
+            else
+            {
+                <ul role="list" class="space-y-6">
+                    @{var updates = _project.StatusUpdates.OrderByDescending(u => u.CreatedAt).ToList();}
+                    @for (int i = 0; i < updates.Count; i++)
+                    {
+                        var update = updates[i];
+                        var isLast = i == updates.Count - 1;
+                        <li class="relative flex gap-x-4">
+                            @if (!isLast)
+                            {
+                                <div class="absolute top-0 -bottom-6 left-0 flex w-6 justify-center">
+                                    <div class="w-px bg-gray-200 dark:bg-white/10"></div>
+                                </div>
+                            }
+                            <div class="relative flex size-6 flex-none items-center justify-center bg-white dark:bg-gray-900">
+                                @if (update.NewStatus.HasValue)
+                                {
+                                    <svg viewBox="0 0 24 24" fill="currentColor" class="size-6 text-indigo-400 dark:text-orange-400">
+                                        <path fill-rule="evenodd" clip-rule="evenodd" d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12Zm13.36-1.814a.75.75 0 1 0-1.22-.872l-3.236 4.53L9.53 12.22a.75.75 0 0 0-1.06 1.06l2.25 2.25a.75.75 0 0 0 1.14-.094l3.75-5.25Z" />
+                                    </svg>
+                                }
+                                else
+                                {
+                                    <div class="size-1.5 rounded-full bg-gray-100 ring-1 ring-gray-300 dark:bg-white/10 dark:ring-white/20"></div>
+                                }
+                            </div>
+                            <div class="flex-auto py-0.5">
+                                @if (update.NewStatus.HasValue)
+                                {
+                                    <p class="text-xs text-gray-500 dark:text-gray-400">
+                                        Status updated to <span class="font-semibold text-gray-900 dark:text-white">@StatusLabel(update.NewStatus.Value)</span>
+                                    </p>
+                                }
+                                <p class="mt-0.5 text-sm text-gray-600 dark:text-gray-300">@update.Message</p>
+                                <time class="block mt-1 text-xs text-gray-400 dark:text-gray-500">
+                                    @update.CreatedAt.ToLocalTime().ToString("d MMM yyyy, HH:mm")
+                                </time>
+                            </div>
+                        </li>
+                    }
+                </ul>
+            }
+        </div>
+    </div>
+}
+
+@code {
+    [Parameter] public Guid Id { get; set; }
+
+    private ClientProject? _project;
+    private bool _notFound;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await AuthState.GetAuthenticationStateAsync();
+        var user = await UserManager.GetUserAsync(authState.User);
+        if (user is null) { _notFound = true; return; }
+
+        _project = await ProjectService.GetByIdAsync(Id);
+        // Security: ensure this project belongs to the requesting client
+        if (_project is null || _project.ClientId != user.Id)
+        {
+            _notFound = true;
+            _project = null;
+        }
+    }
+
+    private static string StatusLabel(ProjectStatus s) => s switch
+    {
+        ProjectStatus.InProgress => "In Progress",
+        ProjectStatus.OnHold => "On Hold",
+        _ => s.ToString()
+    };
+
+    private static string StatusBadgeClass(ProjectStatus s) => s switch
+    {
+        ProjectStatus.InProgress => "bg-blue-50 text-blue-700 ring-1 ring-blue-600/20 dark:bg-blue-400/10 dark:text-blue-400",
+        ProjectStatus.Completed  => "bg-green-50 text-green-700 ring-1 ring-green-600/20 dark:bg-green-400/10 dark:text-green-400",
+        ProjectStatus.Blocked    => "bg-red-50 text-red-700 ring-1 ring-red-600/20 dark:bg-red-400/10 dark:text-red-400",
+        ProjectStatus.OnHold     => "bg-yellow-50 text-yellow-700 ring-1 ring-yellow-600/20 dark:bg-yellow-400/10 dark:text-yellow-400",
+        ProjectStatus.Pending    => "bg-slate-100 text-slate-600 ring-1 ring-slate-500/20 dark:bg-white/5 dark:text-neutral-400",
+        _ => ""
+    };
+
+    private static string InvoiceBadgeClass(InvoiceStatus s) => s switch
+    {
+        InvoiceStatus.Paid    => "bg-green-50 text-green-700 ring-1 ring-green-600/20 dark:bg-green-400/10 dark:text-green-400",
+        InvoiceStatus.Sent    => "bg-blue-50 text-blue-700 ring-1 ring-blue-600/20 dark:bg-blue-400/10 dark:text-blue-400",
+        InvoiceStatus.Overdue => "bg-red-50 text-red-700 ring-1 ring-red-600/20 dark:bg-red-400/10 dark:text-red-400",
+        InvoiceStatus.Draft   => "bg-slate-100 text-slate-600 ring-1 ring-slate-500/20 dark:bg-white/5 dark:text-neutral-400",
+        _ => ""
+    };
+}

@@ -77,6 +77,13 @@ public static class ServiceConfigurationExtensions
         return services;
     }
 
+    public static IServiceCollection ConfigurePortalServices(this IServiceCollection services)
+    {
+        services.AddScoped<IProjectService, ProjectService>();
+        services.AddScoped<IInvoiceService, InvoiceService>();
+        return services;
+    }
+
     public static ILoggingBuilder ConfigureLogging(this ILoggingBuilder logging)
     {
         logging.ClearProviders();
