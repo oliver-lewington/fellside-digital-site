@@ -1,0 +1,127 @@
+@page "/Portal/Invoices"
+@attribute [Authorize]
+@layout PortalLayout
+
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Identity
+@using FellsideDigital.Data
+@using FellsideDigital.Services
+@using FellsideDigital.Components.Layout
+
+@inject IInvoiceService InvoiceService
+@inject AuthenticationStateProvider AuthState
+@inject UserManager<ApplicationUser> UserManager
+
+<PageTitle>Invoices — Fellside Digital Portal</PageTitle>
+
+<div class="mb-8">
+    <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Invoices</h1>
+    <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">All invoices raised against your projects.</p>
+</div>
+
+@if (_invoices is null)
+{
+    <p class="text-sm text-gray-400 dark:text-gray-500">Loading…</p>
+}
+else if (!_invoices.Any())
+{
+    <div class="rounded-xl border border-dashed border-gray-200 dark:border-white/10 p-12 text-center">
+        <p class="text-sm text-gray-400 dark:text-gray-500">No invoices yet.</p>
+    </div>
+}
+else
+{
+    <!-- Stats -->
+    <div class="mb-6 grid grid-cols-1 gap-0.5 overflow-hidden rounded-2xl text-center sm:grid-cols-3">
+        <div class="flex flex-col bg-gray-400/5 p-6 dark:bg-white/5">
+            <dt class="text-sm/6 font-semibold text-gray-600 dark:text-gray-300">Outstanding</dt>
+            <dd class="order-first text-2xl font-semibold tracking-tight text-gray-900 dark:text-white">
+                £@_invoices.Where(i => i.Status is InvoiceStatus.Sent or InvoiceStatus.Overdue).Sum(i => i.Amount).ToString("N2")
+            </dd>
+        </div>
+        <div class="flex flex-col bg-gray-400/5 p-6 dark:bg-white/5">
+            <dt class="text-sm/6 font-semibold text-gray-600 dark:text-gray-300">Total paid</dt>
+            <dd class="order-first text-2xl font-semibold tracking-tight text-gray-900 dark:text-white">
+                £@_invoices.Where(i => i.Status == InvoiceStatus.Paid).Sum(i => i.Amount).ToString("N2")
+            </dd>
+        </div>
+        <div class="flex flex-col bg-gray-400/5 p-6 dark:bg-white/5">
+            <dt class="text-sm/6 font-semibold text-gray-600 dark:text-gray-300">Total invoiced</dt>
+            <dd class="order-first text-2xl font-semibold tracking-tight text-gray-900 dark:text-white">
+                £@_invoices.Sum(i => i.Amount).ToString("N2")
+            </dd>
+        </div>
+    </div>
+
+    <div class="overflow-hidden rounded-xl border border-gray-200 dark:border-white/10 bg-white dark:bg-neutral-900 shadow-sm">
+        <table class="min-w-full divide-y divide-gray-200 dark:divide-white/10">
+            <thead>
+                <tr class="bg-gray-50 dark:bg-white/5">
+                    <th class="px-6 py-3 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Invoice</th>
+                    <th class="px-6 py-3 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider hidden sm:table-cell">Project</th>
+                    <th class="px-6 py-3 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider hidden md:table-cell">Due</th>
+                    <th class="px-6 py-3 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Amount</th>
+                    <th class="px-6 py-3 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Status</th>
+                    <th class="px-6 py-3 text-right text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Download</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-100 dark:divide-white/5">
+                @foreach (var inv in _invoices)
+                {
+                    <tr class="hover:bg-gray-50 dark:hover:bg-white/5 transition-colors">
+                        <td class="px-6 py-4">
+                            <div class="text-sm font-medium text-gray-900 dark:text-white">@inv.Title</div>
+                            <div class="text-xs text-gray-500 dark:text-gray-400">@inv.IssuedAt.ToLocalTime().ToString("d MMM yyyy")</div>
+                        </td>
+                        <td class="px-6 py-4 text-sm text-gray-700 dark:text-gray-300 hidden sm:table-cell">@inv.Project?.Name</td>
+                        <td class="px-6 py-4 text-sm text-gray-500 dark:text-gray-400 hidden md:table-cell">
+                            @(inv.DueAt.HasValue ? inv.DueAt.Value.ToLocalTime().ToString("d MMM yyyy") : "—")
+                        </td>
+                        <td class="px-6 py-4 text-sm font-semibold text-gray-900 dark:text-white">
+                            @inv.Currency @inv.Amount.ToString("N2")
+                        </td>
+                        <td class="px-6 py-4">
+                            <span class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium @InvoiceBadgeClass(inv.Status)">
+                                @inv.Status
+                            </span>
+                        </td>
+                        <td class="px-6 py-4 text-right">
+                            @if (!string.IsNullOrEmpty(inv.FilePath))
+                            {
+                                <a href="@inv.FilePath" download="@inv.FileName"
+                                   class="text-xs font-medium text-indigo-400 dark:text-orange-400 hover:underline">
+                                    Download
+                                </a>
+                            }
+                            else
+                            {
+                                <span class="text-xs text-gray-400 dark:text-gray-500">—</span>
+                            }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}
+
+@code {
+    private List<Invoice>? _invoices;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await AuthState.GetAuthenticationStateAsync();
+        var user = await UserManager.GetUserAsync(authState.User);
+        if (user is null) return;
+        _invoices = await InvoiceService.GetForClientAsync(user.Id);
+    }
+
+    private static string InvoiceBadgeClass(InvoiceStatus s) => s switch
+    {
+        InvoiceStatus.Paid    => "bg-green-50 text-green-700 ring-1 ring-green-600/20 dark:bg-green-400/10 dark:text-green-400",
+        InvoiceStatus.Sent    => "bg-blue-50 text-blue-700 ring-1 ring-blue-600/20 dark:bg-blue-400/10 dark:text-blue-400",
+        InvoiceStatus.Overdue => "bg-red-50 text-red-700 ring-1 ring-red-600/20 dark:bg-red-400/10 dark:text-red-400",
+        InvoiceStatus.Draft   => "bg-slate-100 text-slate-600 ring-1 ring-slate-500/20 dark:bg-white/5 dark:text-neutral-400",
+        _ => ""
+    };
+}

@@ -1,0 +1,217 @@
+@page "/Portal/Settings"
+@attribute [Authorize]
+@layout PortalLayout
+
+@using System.ComponentModel.DataAnnotations
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Identity
+@using FellsideDigital.Data
+@using FellsideDigital.Components.Layout
+
+@inject AuthenticationStateProvider AuthState
+@inject UserManager<ApplicationUser> UserManager
+@inject SignInManager<ApplicationUser> SignInManager
+
+<PageTitle>Settings — Fellside Digital Portal</PageTitle>
+
+<div class="divide-y divide-gray-200 dark:divide-white/10">
+
+    <!-- Personal information -->
+    <div class="grid max-w-7xl grid-cols-1 gap-x-8 gap-y-10 py-12 md:grid-cols-3">
+        <div>
+            <h2 class="text-base/7 font-semibold text-gray-900 dark:text-white">Personal information</h2>
+            <p class="mt-1 text-sm/6 text-gray-500 dark:text-gray-400">Update your name and contact details.</p>
+        </div>
+
+        <div class="md:col-span-2">
+            @if (!string.IsNullOrEmpty(_profileSuccess))
+            {
+                <div class="mb-6 rounded-md bg-green-50 p-4 dark:bg-green-900/20">
+                    <p class="text-sm text-green-700 dark:text-green-400">@_profileSuccess</p>
+                </div>
+            }
+            @if (!string.IsNullOrEmpty(_profileError))
+            {
+                <div class="mb-6 rounded-md bg-red-50 p-4 dark:bg-red-900/20">
+                    <p class="text-sm text-red-700 dark:text-red-400">@_profileError</p>
+                </div>
+            }
+            <EditForm Model="ProfileInput" OnValidSubmit="SaveProfileAsync">
+                <DataAnnotationsValidator />
+                <div class="grid grid-cols-1 gap-x-6 gap-y-6 sm:max-w-xl sm:grid-cols-6">
+                    <div class="sm:col-span-3">
+                        <label class="block text-sm/6 font-medium text-gray-900 dark:text-white">First name</label>
+                        <div class="mt-2">
+                            <InputText @bind-Value="ProfileInput.FirstName" class="@InputClass" />
+                            <ValidationMessage For="() => ProfileInput.FirstName" class="mt-1 text-xs text-red-600 dark:text-red-400" />
+                        </div>
+                    </div>
+                    <div class="sm:col-span-3">
+                        <label class="block text-sm/6 font-medium text-gray-900 dark:text-white">Last name</label>
+                        <div class="mt-2">
+                            <InputText @bind-Value="ProfileInput.LastName" class="@InputClass" />
+                            <ValidationMessage For="() => ProfileInput.LastName" class="mt-1 text-xs text-red-600 dark:text-red-400" />
+                        </div>
+                    </div>
+                    <div class="col-span-full">
+                        <label class="block text-sm/6 font-medium text-gray-900 dark:text-white">Email address</label>
+                        <div class="mt-2">
+                            <input type="email" value="@_email" disabled
+                                   class="block w-full rounded-md bg-gray-100 px-3 py-1.5 text-base text-gray-500 outline-1 -outline-offset-1 outline-gray-300 sm:text-sm/6 dark:bg-white/5 dark:text-gray-500 dark:outline-white/10 cursor-not-allowed" />
+                        </div>
+                        <p class="mt-1 text-xs text-gray-400 dark:text-gray-500">Contact support to change your email address.</p>
+                    </div>
+                </div>
+                <div class="mt-8 flex">
+                    <button type="submit" disabled="@_savingProfile"
+                            class="rounded-md bg-indigo-400 dark:bg-orange-400 px-3 py-2 text-sm font-semibold text-white shadow-xs hover:opacity-90 disabled:opacity-60 disabled:cursor-not-allowed transition">
+                        @(_savingProfile ? "Saving…" : "Save")
+                    </button>
+                </div>
+            </EditForm>
+        </div>
+    </div>
+
+    <!-- Change password -->
+    <div class="grid max-w-7xl grid-cols-1 gap-x-8 gap-y-10 py-12 md:grid-cols-3">
+        <div>
+            <h2 class="text-base/7 font-semibold text-gray-900 dark:text-white">Change password</h2>
+            <p class="mt-1 text-sm/6 text-gray-500 dark:text-gray-400">Update the password associated with your account.</p>
+        </div>
+
+        <div class="md:col-span-2">
+            @if (!string.IsNullOrEmpty(_passwordSuccess))
+            {
+                <div class="mb-6 rounded-md bg-green-50 p-4 dark:bg-green-900/20">
+                    <p class="text-sm text-green-700 dark:text-green-400">@_passwordSuccess</p>
+                </div>
+            }
+            @if (!string.IsNullOrEmpty(_passwordError))
+            {
+                <div class="mb-6 rounded-md bg-red-50 p-4 dark:bg-red-900/20">
+                    <p class="text-sm text-red-700 dark:text-red-400">@_passwordError</p>
+                </div>
+            }
+            <EditForm Model="PasswordInput" OnValidSubmit="ChangePasswordAsync">
+                <DataAnnotationsValidator />
+                <div class="grid grid-cols-1 gap-x-6 gap-y-6 sm:max-w-xl sm:grid-cols-6">
+                    <div class="col-span-full">
+                        <label class="block text-sm/6 font-medium text-gray-900 dark:text-white">Current password</label>
+                        <div class="mt-2">
+                            <InputText type="password" @bind-Value="PasswordInput.CurrentPassword" class="@InputClass" />
+                            <ValidationMessage For="() => PasswordInput.CurrentPassword" class="mt-1 text-xs text-red-600 dark:text-red-400" />
+                        </div>
+                    </div>
+                    <div class="col-span-full">
+                        <label class="block text-sm/6 font-medium text-gray-900 dark:text-white">New password</label>
+                        <div class="mt-2">
+                            <InputText type="password" @bind-Value="PasswordInput.NewPassword" class="@InputClass" />
+                            <ValidationMessage For="() => PasswordInput.NewPassword" class="mt-1 text-xs text-red-600 dark:text-red-400" />
+                        </div>
+                    </div>
+                    <div class="col-span-full">
+                        <label class="block text-sm/6 font-medium text-gray-900 dark:text-white">Confirm new password</label>
+                        <div class="mt-2">
+                            <InputText type="password" @bind-Value="PasswordInput.ConfirmPassword" class="@InputClass" />
+                            <ValidationMessage For="() => PasswordInput.ConfirmPassword" class="mt-1 text-xs text-red-600 dark:text-red-400" />
+                        </div>
+                    </div>
+                </div>
+                <div class="mt-8 flex">
+                    <button type="submit" disabled="@_changingPassword"
+                            class="rounded-md bg-indigo-400 dark:bg-orange-400 px-3 py-2 text-sm font-semibold text-white shadow-xs hover:opacity-90 disabled:opacity-60 disabled:cursor-not-allowed transition">
+                        @(_changingPassword ? "Updating…" : "Update password")
+                    </button>
+                </div>
+            </EditForm>
+        </div>
+    </div>
+
+</div>
+
+@code {
+    private ApplicationUser? _user;
+    private string _email = "";
+
+    private ProfileModel ProfileInput { get; set; } = new();
+    private PasswordModel PasswordInput { get; set; } = new();
+
+    private bool _savingProfile;
+    private bool _changingPassword;
+    private string? _profileSuccess;
+    private string? _profileError;
+    private string? _passwordSuccess;
+    private string? _passwordError;
+
+    private const string InputClass = "block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-400 sm:text-sm/6 dark:bg-white/5 dark:text-white dark:outline-white/10 dark:placeholder:text-gray-500 dark:focus:outline-orange-400";
+
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await AuthState.GetAuthenticationStateAsync();
+        _user = await UserManager.GetUserAsync(authState.User);
+        if (_user is null) return;
+
+        _email = _user.Email ?? "";
+        ProfileInput.FirstName = _user.FirstName ?? "";
+        ProfileInput.LastName = _user.LastName ?? "";
+    }
+
+    private async Task SaveProfileAsync()
+    {
+        if (_user is null) return;
+        _savingProfile = true;
+        _profileSuccess = null;
+        _profileError = null;
+
+        _user.FirstName = ProfileInput.FirstName;
+        _user.LastName = ProfileInput.LastName;
+
+        var result = await UserManager.UpdateAsync(_user);
+        _savingProfile = false;
+
+        if (result.Succeeded)
+            _profileSuccess = "Profile updated successfully.";
+        else
+            _profileError = string.Join(" ", result.Errors.Select(e => e.Description));
+    }
+
+    private async Task ChangePasswordAsync()
+    {
+        if (_user is null) return;
+        if (PasswordInput.NewPassword != PasswordInput.ConfirmPassword)
+        {
+            _passwordError = "New passwords do not match.";
+            return;
+        }
+
+        _changingPassword = true;
+        _passwordSuccess = null;
+        _passwordError = null;
+
+        var result = await UserManager.ChangePasswordAsync(_user, PasswordInput.CurrentPassword, PasswordInput.NewPassword);
+        _changingPassword = false;
+
+        if (result.Succeeded)
+        {
+            _passwordSuccess = "Password updated successfully.";
+            PasswordInput = new();
+        }
+        else
+        {
+            _passwordError = string.Join(" ", result.Errors.Select(e => e.Description));
+        }
+    }
+
+    private sealed class ProfileModel
+    {
+        public string FirstName { get; set; } = "";
+        public string LastName { get; set; } = "";
+    }
+
+    private sealed class PasswordModel
+    {
+        [Required] public string CurrentPassword { get; set; } = "";
+        [Required, MinLength(8)] public string NewPassword { get; set; } = "";
+        [Required] public string ConfirmPassword { get; set; } = "";
+    }
+}

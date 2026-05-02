@@ -1,0 +1,206 @@
+@page "/Admin/Projects/Create"
+@attribute [Authorize(Roles = "SiteAdmin")]
+
+@using System.ComponentModel.DataAnnotations
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Identity
+@using FellsideDigital.Data
+@using FellsideDigital.Services
+
+@inject IProjectService ProjectService
+@inject AuthenticationStateProvider AuthState
+@inject UserManager<ApplicationUser> UserManager
+@inject NavigationManager NavigationManager
+
+<PageTitle>New Project — Fellside Digital Admin</PageTitle>
+
+<div class="min-h-screen bg-slate-50 dark:bg-neutral-950 pt-24 pb-12">
+    <div class="mx-auto max-w-2xl px-4 sm:px-6 lg:px-8">
+
+        <div class="mb-8">
+            <NavLink href="/Admin/Projects"
+                     class="text-sm font-medium text-slate-500 dark:text-neutral-400 hover:text-slate-900 dark:hover:text-neutral-100">
+                ← Back to projects
+            </NavLink>
+            <h1 class="mt-4 text-2xl font-bold text-slate-900 dark:text-neutral-100">New client project</h1>
+            <p class="mt-1 text-sm text-slate-500 dark:text-neutral-400">
+                Assign a project to a client so they can track progress in their portal.
+            </p>
+        </div>
+
+        @if (!string.IsNullOrEmpty(_errorMessage))
+        {
+            <div class="mb-6 rounded-md bg-red-50 p-4 dark:bg-red-900/20">
+                <p class="text-sm text-red-700 dark:text-red-400">@_errorMessage</p>
+            </div>
+        }
+
+        <div class="rounded-xl border border-slate-200 dark:border-white/10 bg-white dark:bg-neutral-900 shadow-sm p-6 sm:p-8">
+            <EditForm Model="Input" OnValidSubmit="CreateAsync" class="space-y-6">
+                <DataAnnotationsValidator />
+
+                <div>
+                    <label class="block text-sm font-medium text-slate-900 dark:text-neutral-100 mb-1.5">
+                        Client <span class="text-red-500">*</span>
+                    </label>
+                    <InputSelect @bind-Value="Input.ClientId" class="@InputClass">
+                        <option value="">Select a client…</option>
+                        @foreach (var client in _clients)
+                        {
+                            <option value="@client.Id">@client.CompanyName — @client.Email</option>
+                        }
+                    </InputSelect>
+                    <ValidationMessage For="() => Input.ClientId" class="mt-1 text-xs text-red-600 dark:text-red-400" />
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-slate-900 dark:text-neutral-100 mb-1.5">
+                        Project name <span class="text-red-500">*</span>
+                    </label>
+                    <InputText @bind-Value="Input.Name" placeholder="Client Portal v1.0" class="@InputClass" />
+                    <ValidationMessage For="() => Input.Name" class="mt-1 text-xs text-red-600 dark:text-red-400" />
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-slate-900 dark:text-neutral-100 mb-1.5">
+                        Description <span class="text-red-500">*</span>
+                    </label>
+                    <InputTextArea @bind-Value="Input.Description" rows="3"
+                                   placeholder="Brief summary of what is being built…" class="@InputClass" />
+                    <ValidationMessage For="() => Input.Description" class="mt-1 text-xs text-red-600 dark:text-red-400" />
+                </div>
+
+                <div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
+                    <div>
+                        <label class="block text-sm font-medium text-slate-900 dark:text-neutral-100 mb-1.5">
+                            Type <span class="text-red-500">*</span>
+                        </label>
+                        <InputSelect @bind-Value="Input.Type" class="@InputClass">
+                            <option value="@ProjectType.Website">Website</option>
+                            <option value="@ProjectType.Automation">Automation</option>
+                        </InputSelect>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-slate-900 dark:text-neutral-100 mb-1.5">Status</label>
+                        <InputSelect @bind-Value="Input.Status" class="@InputClass">
+                            @foreach (var s in Enum.GetValues<ProjectStatus>())
+                            {
+                                <option value="@s">@StatusLabel(s)</option>
+                            }
+                        </InputSelect>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-slate-900 dark:text-neutral-100 mb-1.5">
+                        Railway preview URL
+                        <span class="ml-1 text-xs font-normal text-slate-400 dark:text-neutral-500">(iframe embed for client)</span>
+                    </label>
+                    <InputText @bind-Value="Input.PreviewUrl" placeholder="https://myapp.up.railway.app" class="@InputClass" />
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-slate-900 dark:text-neutral-100 mb-1.5">
+                        Railway project URL
+                        <span class="ml-1 text-xs font-normal text-slate-400 dark:text-neutral-500">(external link)</span>
+                    </label>
+                    <InputText @bind-Value="Input.ProjectUrl" placeholder="https://railway.app/project/..." class="@InputClass" />
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-slate-900 dark:text-neutral-100 mb-1.5">
+                        Deployment notes
+                        <span class="ml-1 text-xs font-normal text-slate-400 dark:text-neutral-500">(shown to client)</span>
+                    </label>
+                    <InputTextArea @bind-Value="Input.DeploymentNotes" rows="2"
+                                   placeholder="Any notes about the current deployment…" class="@InputClass" />
+                </div>
+
+                <div class="flex items-center justify-end gap-4 pt-2">
+                    <NavLink href="/Admin/Projects"
+                             class="text-sm font-medium text-slate-500 dark:text-neutral-400 hover:text-slate-900 dark:hover:text-neutral-100">
+                        Cancel
+                    </NavLink>
+                    <button type="submit" disabled="@_submitting"
+                            class="inline-flex items-center gap-2 rounded-md bg-indigo-400 dark:bg-orange-400 px-5 py-2 text-sm font-semibold text-white shadow-sm hover:opacity-90 disabled:opacity-60 disabled:cursor-not-allowed transition">
+                        @(_submitting ? "Creating…" : "Create project")
+                    </button>
+                </div>
+            </EditForm>
+        </div>
+    </div>
+</div>
+
+@code {
+    private InputModel Input { get; set; } = new();
+    private List<ApplicationUser> _clients = [];
+    private string? _errorMessage;
+    private bool _submitting;
+
+    private const string InputClass = "block w-full rounded-md bg-white px-3 py-1.5 text-sm text-slate-900 outline-1 -outline-offset-1 outline-slate-300 placeholder:text-slate-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-400 dark:bg-white/5 dark:text-neutral-100 dark:outline-white/10 dark:placeholder:text-neutral-500 dark:focus:outline-orange-400";
+
+    protected override async Task OnInitializedAsync()
+    {
+        var users = await UserManager.GetUsersInRoleAsync("AuctionAdmin");
+        // Clients are users not in any admin role
+        var allUsers = UserManager.Users.ToList();
+        var adminIds = (await UserManager.GetUsersInRoleAsync("SiteAdmin"))
+            .Select(u => u.Id)
+            .ToHashSet();
+        _clients = allUsers.Where(u => !adminIds.Contains(u.Id)).ToList();
+    }
+
+    private async Task CreateAsync()
+    {
+        _submitting = true;
+        _errorMessage = null;
+        try
+        {
+            var authState = await AuthState.GetAuthenticationStateAsync();
+            var admin = await UserManager.GetUserAsync(authState.User);
+            if (admin is null) { _errorMessage = "Could not identify admin user."; return; }
+
+            var project = new ClientProject
+            {
+                ClientId = Input.ClientId,
+                Name = Input.Name,
+                Description = Input.Description,
+                Type = Input.Type,
+                Status = Input.Status,
+                PreviewUrl = string.IsNullOrWhiteSpace(Input.PreviewUrl) ? null : Input.PreviewUrl.Trim(),
+                ProjectUrl = string.IsNullOrWhiteSpace(Input.ProjectUrl) ? null : Input.ProjectUrl.Trim(),
+                DeploymentNotes = string.IsNullOrWhiteSpace(Input.DeploymentNotes) ? null : Input.DeploymentNotes.Trim()
+            };
+
+            await ProjectService.CreateAsync(project, admin.Id);
+            NavigationManager.NavigateTo($"/Admin/Projects/{project.Id}");
+        }
+        catch (Exception ex)
+        {
+            _errorMessage = $"Failed to create project: {ex.Message}";
+        }
+        finally
+        {
+            _submitting = false;
+        }
+    }
+
+    private static string StatusLabel(ProjectStatus s) => s switch
+    {
+        ProjectStatus.InProgress => "In Progress",
+        ProjectStatus.OnHold => "On Hold",
+        _ => s.ToString()
+    };
+
+    private sealed class InputModel
+    {
+        [Required] public string ClientId { get; set; } = "";
+        [Required] public string Name { get; set; } = "";
+        [Required] public string Description { get; set; } = "";
+        public ProjectType Type { get; set; } = ProjectType.Website;
+        public ProjectStatus Status { get; set; } = ProjectStatus.Pending;
+        public string? PreviewUrl { get; set; }
+        public string? ProjectUrl { get; set; }
+        public string? DeploymentNotes { get; set; }
+    }
+}

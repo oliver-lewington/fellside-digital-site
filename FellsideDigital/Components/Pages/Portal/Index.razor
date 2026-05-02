@@ -1,0 +1,173 @@
+@page "/Portal"
+@attribute [Authorize]
+@layout PortalLayout
+
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Identity
+@using FellsideDigital.Data
+@using FellsideDigital.Services
+@using FellsideDigital.Components.Layout
+
+@inject IProjectService ProjectService
+@inject IInvoiceService InvoiceService
+@inject AuthenticationStateProvider AuthState
+@inject UserManager<ApplicationUser> UserManager
+
+<PageTitle>My Portal — Fellside Digital</PageTitle>
+
+@if (_user is not null)
+{
+    <div class="mb-8">
+        <h1 class="text-2xl font-bold text-gray-900 dark:text-white">
+            Welcome back, @(_user.FirstName ?? _user.Email)
+        </h1>
+        <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
+            Here's an overview of your account with Fellside Digital.
+        </p>
+    </div>
+
+    <!-- Stats strip -->
+    <div class="mb-8 grid grid-cols-1 gap-0.5 overflow-hidden rounded-2xl text-center sm:grid-cols-2 lg:grid-cols-4">
+        <div class="flex flex-col bg-gray-400/5 p-8 dark:bg-white/5">
+            <dt class="text-sm/6 font-semibold text-gray-600 dark:text-gray-300">Active projects</dt>
+            <dd class="order-first text-3xl font-semibold tracking-tight text-gray-900 dark:text-white">
+                @_projects.Count(p => p.Status == ProjectStatus.InProgress)
+            </dd>
+        </div>
+        <div class="flex flex-col bg-gray-400/5 p-8 dark:bg-white/5">
+            <dt class="text-sm/6 font-semibold text-gray-600 dark:text-gray-300">Total invoices</dt>
+            <dd class="order-first text-3xl font-semibold tracking-tight text-gray-900 dark:text-white">@_invoices.Count</dd>
+        </div>
+        <div class="flex flex-col bg-gray-400/5 p-8 dark:bg-white/5">
+            <dt class="text-sm/6 font-semibold text-gray-600 dark:text-gray-300">Outstanding</dt>
+            <dd class="order-first text-3xl font-semibold tracking-tight text-gray-900 dark:text-white">
+                £@_invoices.Where(i => i.Status is InvoiceStatus.Sent or InvoiceStatus.Overdue).Sum(i => i.Amount).ToString("N0")
+            </dd>
+        </div>
+        <div class="flex flex-col bg-gray-400/5 p-8 dark:bg-white/5">
+            <dt class="text-sm/6 font-semibold text-gray-600 dark:text-gray-300">Total paid</dt>
+            <dd class="order-first text-3xl font-semibold tracking-tight text-gray-900 dark:text-white">
+                £@_invoices.Where(i => i.Status == InvoiceStatus.Paid).Sum(i => i.Amount).ToString("N0")
+            </dd>
+        </div>
+    </div>
+
+    <!-- Projects -->
+    <div class="mb-8">
+        <div class="flex items-center justify-between mb-4">
+            <h2 class="text-base font-semibold text-gray-900 dark:text-white">My projects</h2>
+            <NavLink href="/Portal/Projects" class="text-sm font-medium text-indigo-400 dark:text-orange-400 hover:underline">
+                View all →
+            </NavLink>
+        </div>
+
+        @if (!_projects.Any())
+        {
+            <div class="rounded-xl border border-dashed border-gray-200 dark:border-white/10 p-8 text-center">
+                <p class="text-sm text-gray-400 dark:text-gray-500">No projects yet — your project manager will set this up shortly.</p>
+            </div>
+        }
+        else
+        {
+            <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                @foreach (var project in _projects.Take(4))
+                {
+                    <NavLink href="@($"/Portal/Projects/{project.Id}")"
+                             class="block rounded-xl border border-gray-200 dark:border-white/10 bg-white dark:bg-neutral-900 p-5 hover:border-indigo-300 dark:hover:border-orange-400/40 transition-colors group">
+                        <div class="flex items-start justify-between gap-3">
+                            <div class="min-w-0">
+                                <p class="text-sm font-semibold text-gray-900 dark:text-white truncate group-hover:text-indigo-400 dark:group-hover:text-orange-400 transition-colors">
+                                    @project.Name
+                                </p>
+                                <p class="mt-1 text-xs text-gray-500 dark:text-gray-400 line-clamp-2">@project.Description</p>
+                            </div>
+                            <span class="inline-flex shrink-0 items-center rounded-full px-2.5 py-0.5 text-xs font-medium @StatusBadgeClass(project.Status)">
+                                @StatusLabel(project.Status)
+                            </span>
+                        </div>
+                        <div class="mt-4 flex items-center gap-4 text-xs text-gray-400 dark:text-gray-500">
+                            <span>@project.Type</span>
+                            <span>@project.Invoices.Count invoice@(project.Invoices.Count == 1 ? "" : "s")</span>
+                        </div>
+                    </NavLink>
+                }
+            </div>
+        }
+    </div>
+
+    <!-- Recent invoices -->
+    @if (_invoices.Any())
+    {
+        <div>
+            <div class="flex items-center justify-between mb-4">
+                <h2 class="text-base font-semibold text-gray-900 dark:text-white">Recent invoices</h2>
+                <NavLink href="/Portal/Invoices" class="text-sm font-medium text-indigo-400 dark:text-orange-400 hover:underline">
+                    View all →
+                </NavLink>
+            </div>
+            <div class="overflow-hidden rounded-xl border border-gray-200 dark:border-white/10 bg-white dark:bg-neutral-900">
+                <ul role="list" class="divide-y divide-gray-100 dark:divide-white/5">
+                    @foreach (var inv in _invoices.Take(5))
+                    {
+                        <li class="flex items-center justify-between px-6 py-4 gap-4">
+                            <div class="min-w-0">
+                                <p class="text-sm font-medium text-gray-900 dark:text-white truncate">@inv.Title</p>
+                                <p class="text-xs text-gray-500 dark:text-gray-400">
+                                    @inv.Project?.Name · @inv.IssuedAt.ToLocalTime().ToString("d MMM yyyy")
+                                </p>
+                            </div>
+                            <div class="flex items-center gap-3 shrink-0">
+                                <span class="text-sm font-semibold text-gray-900 dark:text-white">@inv.Currency @inv.Amount.ToString("N2")</span>
+                                <span class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium @InvoiceBadgeClass(inv.Status)">
+                                    @inv.Status
+                                </span>
+                            </div>
+                        </li>
+                    }
+                </ul>
+            </div>
+        </div>
+    }
+}
+
+@code {
+    private ApplicationUser? _user;
+    private List<ClientProject> _projects = [];
+    private List<Invoice> _invoices = [];
+
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await AuthState.GetAuthenticationStateAsync();
+        _user = await UserManager.GetUserAsync(authState.User);
+        if (_user is null) return;
+
+        _projects = await ProjectService.GetForClientAsync(_user.Id);
+        _invoices = await InvoiceService.GetForClientAsync(_user.Id);
+    }
+
+    private static string StatusLabel(ProjectStatus s) => s switch
+    {
+        ProjectStatus.InProgress => "In Progress",
+        ProjectStatus.OnHold => "On Hold",
+        _ => s.ToString()
+    };
+
+    private static string StatusBadgeClass(ProjectStatus s) => s switch
+    {
+        ProjectStatus.InProgress => "bg-blue-50 text-blue-700 ring-1 ring-blue-600/20 dark:bg-blue-400/10 dark:text-blue-400",
+        ProjectStatus.Completed  => "bg-green-50 text-green-700 ring-1 ring-green-600/20 dark:bg-green-400/10 dark:text-green-400",
+        ProjectStatus.Blocked    => "bg-red-50 text-red-700 ring-1 ring-red-600/20 dark:bg-red-400/10 dark:text-red-400",
+        ProjectStatus.OnHold     => "bg-yellow-50 text-yellow-700 ring-1 ring-yellow-600/20 dark:bg-yellow-400/10 dark:text-yellow-400",
+        ProjectStatus.Pending    => "bg-slate-100 text-slate-600 ring-1 ring-slate-500/20 dark:bg-white/5 dark:text-neutral-400",
+        _ => ""
+    };
+
+    private static string InvoiceBadgeClass(InvoiceStatus s) => s switch
+    {
+        InvoiceStatus.Paid    => "bg-green-50 text-green-700 ring-1 ring-green-600/20 dark:bg-green-400/10 dark:text-green-400",
+        InvoiceStatus.Sent    => "bg-blue-50 text-blue-700 ring-1 ring-blue-600/20 dark:bg-blue-400/10 dark:text-blue-400",
+        InvoiceStatus.Overdue => "bg-red-50 text-red-700 ring-1 ring-red-600/20 dark:bg-red-400/10 dark:text-red-400",
+        InvoiceStatus.Draft   => "bg-slate-100 text-slate-600 ring-1 ring-slate-500/20 dark:bg-white/5 dark:text-neutral-400",
+        _ => ""
+    };
+}

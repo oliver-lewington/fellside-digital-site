@@ -1,0 +1,87 @@
+@using Microsoft.AspNetCore.Identity
+@using FellsideDigital.Data
+@inject AuthenticationStateProvider AuthState
+@inject UserManager<ApplicationUser> UserManager
+@inherits LayoutComponentBase
+
+@if (_sidebarOpen)
+{
+    <div class="relative z-50 xl:hidden" role="dialog" aria-modal="true">
+        <div class="fixed inset-0 bg-gray-900/80 transition-opacity duration-300 ease-linear"
+             @onclick="CloseSidebar"></div>
+        <div class="fixed inset-0 flex">
+            <div class="relative mr-16 flex w-full max-w-xs flex-1">
+                <div class="absolute top-0 left-full flex w-16 justify-center pt-5">
+                    <button type="button" class="-m-2.5 p-2.5" @onclick="CloseSidebar">
+                        <span class="sr-only">Close sidebar</span>
+                        <svg class="size-6 text-white" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+                </div>
+                <div class="flex grow flex-col gap-y-5 overflow-y-auto bg-gray-50 px-6 dark:bg-gray-900 dark:ring dark:ring-white/10">
+                    <PortalSidebarContent UserName="@_displayName" UserInitials="@_initials" />
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+<!-- Static sidebar for desktop -->
+<div class="hidden xl:fixed xl:inset-y-0 xl:z-50 xl:flex xl:w-72 xl:flex-col">
+    <div class="flex grow flex-col gap-y-5 overflow-y-auto bg-gray-50 px-6 ring-1 ring-gray-200 dark:bg-black/10 dark:ring-white/5">
+        <PortalSidebarContent UserName="@_displayName" UserInitials="@_initials" />
+    </div>
+</div>
+
+<div class="xl:pl-72">
+    <!-- Top bar -->
+    <div class="sticky top-0 z-40 flex h-16 shrink-0 items-center gap-x-6 border-b border-gray-200 bg-white px-4 shadow-xs sm:px-6 lg:px-8 dark:border-white/5 dark:bg-gray-900 dark:shadow-none">
+        <button type="button" class="-m-2.5 p-2.5 text-gray-900 xl:hidden dark:text-white" @onclick="OpenSidebar">
+            <span class="sr-only">Open sidebar</span>
+            <svg class="size-5" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" clip-rule="evenodd" d="M2 4.75A.75.75 0 0 1 2.75 4h14.5a.75.75 0 0 1 0 1.5H2.75A.75.75 0 0 1 2 4.75ZM2 10a.75.75 0 0 1 .75-.75h14.5a.75.75 0 0 1 0 1.5H2.75A.75.75 0 0 1 2 10Zm0 5.25a.75.75 0 0 1 .75-.75h14.5a.75.75 0 0 1 0 1.5H2.75a.75.75 0 0 1-.75-.75Z" />
+            </svg>
+        </button>
+
+        <div class="flex flex-1 items-center justify-end gap-x-4">
+            <span class="text-sm text-gray-500 dark:text-gray-400">Welcome back, <span class="font-medium text-gray-900 dark:text-white">@_displayName</span></span>
+            <NavLink href="/Account/Manage"
+                     class="size-8 rounded-full bg-indigo-400 dark:bg-orange-400 flex items-center justify-center text-white text-sm font-semibold">
+                @_initials
+            </NavLink>
+        </div>
+    </div>
+
+    <main class="py-10">
+        <div class="px-4 sm:px-6 lg:px-8">
+            @Body
+        </div>
+    </main>
+</div>
+
+@code {
+    private bool _sidebarOpen;
+    private string _displayName = "";
+    private string _initials = "";
+
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await AuthState.GetAuthenticationStateAsync();
+        var user = await UserManager.GetUserAsync(authState.User);
+        if (user is not null)
+        {
+            var first = user.FirstName ?? "";
+            var last = user.LastName ?? "";
+            _displayName = string.IsNullOrWhiteSpace($"{first} {last}".Trim())
+                ? user.Email ?? "Client"
+                : $"{first} {last}".Trim();
+            _initials = $"{first.FirstOrDefault()}{last.FirstOrDefault()}".ToUpper().Trim();
+            if (string.IsNullOrEmpty(_initials))
+                _initials = (user.Email ?? "?")[0].ToString().ToUpper();
+        }
+    }
+
+    private void OpenSidebar() => _sidebarOpen = true;
+    private void CloseSidebar() => _sidebarOpen = false;
+}

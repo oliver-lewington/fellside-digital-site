@@ -1,0 +1,98 @@
+@page "/Portal/Projects"
+@attribute [Authorize]
+@layout PortalLayout
+
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Identity
+@using FellsideDigital.Data
+@using FellsideDigital.Services
+@using FellsideDigital.Components.Layout
+
+@inject IProjectService ProjectService
+@inject AuthenticationStateProvider AuthState
+@inject UserManager<ApplicationUser> UserManager
+
+<PageTitle>My Projects — Fellside Digital Portal</PageTitle>
+
+<div class="mb-8">
+    <h1 class="text-2xl font-bold text-gray-900 dark:text-white">My projects</h1>
+    <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Track the status and progress of your work with us.</p>
+</div>
+
+@if (_projects is null)
+{
+    <p class="text-sm text-gray-400 dark:text-gray-500">Loading…</p>
+}
+else if (!_projects.Any())
+{
+    <div class="rounded-xl border border-dashed border-gray-200 dark:border-white/10 p-12 text-center">
+        <p class="text-sm text-gray-400 dark:text-gray-500">No projects yet — your project manager will set this up shortly.</p>
+    </div>
+}
+else
+{
+    <div class="space-y-4">
+        @foreach (var project in _projects)
+        {
+            <NavLink href="@($"/Portal/Projects/{project.Id}")"
+                     class="block rounded-xl border border-gray-200 dark:border-white/10 bg-white dark:bg-neutral-900 p-6 hover:border-indigo-300 dark:hover:border-orange-400/40 transition-colors group">
+                <div class="flex items-start justify-between gap-4">
+                    <div class="min-w-0 flex-1">
+                        <div class="flex items-center gap-3">
+                            <p class="text-base font-semibold text-gray-900 dark:text-white group-hover:text-indigo-400 dark:group-hover:text-orange-400 transition-colors">
+                                @project.Name
+                            </p>
+                            <span class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium @StatusBadgeClass(project.Status)">
+                                @StatusLabel(project.Status)
+                            </span>
+                            <span class="hidden sm:inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium bg-gray-100 text-gray-600 dark:bg-white/5 dark:text-gray-400">
+                                @project.Type
+                            </span>
+                        </div>
+                        <p class="mt-1.5 text-sm text-gray-500 dark:text-gray-400 line-clamp-2">@project.Description</p>
+                    </div>
+                    <svg class="size-5 text-gray-400 shrink-0 mt-0.5 group-hover:text-indigo-400 dark:group-hover:text-orange-400 transition-colors" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+                    </svg>
+                </div>
+                <div class="mt-4 flex items-center gap-6 text-xs text-gray-400 dark:text-gray-500">
+                    <span>Started @project.CreatedAt.ToLocalTime().ToString("d MMM yyyy")</span>
+                    <span>@project.Invoices.Count invoice@(project.Invoices.Count == 1 ? "" : "s")</span>
+                    @if (project.StatusUpdates.Any())
+                    {
+                        <span>Last update @project.StatusUpdates.OrderByDescending(u => u.CreatedAt).First().CreatedAt.ToLocalTime().ToString("d MMM yyyy")</span>
+                    }
+                </div>
+            </NavLink>
+        }
+    </div>
+}
+
+@code {
+    private List<ClientProject>? _projects;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await AuthState.GetAuthenticationStateAsync();
+        var user = await UserManager.GetUserAsync(authState.User);
+        if (user is null) return;
+        _projects = await ProjectService.GetForClientAsync(user.Id);
+    }
+
+    private static string StatusLabel(ProjectStatus s) => s switch
+    {
+        ProjectStatus.InProgress => "In Progress",
+        ProjectStatus.OnHold => "On Hold",
+        _ => s.ToString()
+    };
+
+    private static string StatusBadgeClass(ProjectStatus s) => s switch
+    {
+        ProjectStatus.InProgress => "bg-blue-50 text-blue-700 ring-1 ring-blue-600/20 dark:bg-blue-400/10 dark:text-blue-400",
+        ProjectStatus.Completed  => "bg-green-50 text-green-700 ring-1 ring-green-600/20 dark:bg-green-400/10 dark:text-green-400",
+        ProjectStatus.Blocked    => "bg-red-50 text-red-700 ring-1 ring-red-600/20 dark:bg-red-400/10 dark:text-red-400",
+        ProjectStatus.OnHold     => "bg-yellow-50 text-yellow-700 ring-1 ring-yellow-600/20 dark:bg-yellow-400/10 dark:text-yellow-400",
+        ProjectStatus.Pending    => "bg-slate-100 text-slate-600 ring-1 ring-slate-500/20 dark:bg-white/5 dark:text-neutral-400",
+        _ => ""
+    };
+}
