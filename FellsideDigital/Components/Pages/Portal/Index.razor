@@ -2,24 +2,20 @@
 @attribute [Authorize]
 @layout PortalLayout
 
+@using System.Security.Claims
 @using Microsoft.AspNetCore.Authorization
 @using Microsoft.AspNetCore.Identity
 @using FellsideDigital.Data
 @using FellsideDigital.Services
 @using FellsideDigital.Components.Layout
 
-@inject IProjectService ProjectService
-@inject IInvoiceService InvoiceService
-@inject AuthenticationStateProvider AuthState
-@inject UserManager<ApplicationUser> UserManager
-
 <PageTitle>My Portal — Fellside Digital</PageTitle>
 
-@if (_user is not null)
+@if (!string.IsNullOrEmpty(_userId))
 {
     <div class="mb-8">
         <h1 class="text-2xl font-bold text-gray-900 dark:text-white">
-            Welcome back, @(_user.FirstName ?? _user.Email)
+            Welcome back, @_displayName
         </h1>
         <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
             Here's an overview of your account with Fellside Digital.
@@ -29,7 +25,7 @@
     <!-- Stats strip -->
     <div class="mb-8 grid grid-cols-1 gap-0.5 overflow-hidden rounded-2xl text-center sm:grid-cols-2 lg:grid-cols-4">
         <div class="flex flex-col bg-gray-400/5 p-8 dark:bg-white/5">
-            <dt class="text-sm/6 font-semibold text-gray-600 dark:text-gray-300">Active projects</dt>
+            <dt` class="text-sm/6 font-semibold text-gray-600 dark:text-gray-300">Active projects</dt`>
             <dd class="order-first text-3xl font-semibold tracking-tight text-gray-900 dark:text-white">
                 @_projects.Count(p => p.Status == ProjectStatus.InProgress)
             </dd>
@@ -130,44 +126,3 @@
     }
 }
 
-@code {
-    private ApplicationUser? _user;
-    private List<ClientProject> _projects = [];
-    private List<Invoice> _invoices = [];
-
-    protected override async Task OnInitializedAsync()
-    {
-        var authState = await AuthState.GetAuthenticationStateAsync();
-        _user = await UserManager.GetUserAsync(authState.User);
-        if (_user is null) return;
-
-        _projects = await ProjectService.GetForClientAsync(_user.Id);
-        _invoices = await InvoiceService.GetForClientAsync(_user.Id);
-    }
-
-    private static string StatusLabel(ProjectStatus s) => s switch
-    {
-        ProjectStatus.InProgress => "In Progress",
-        ProjectStatus.OnHold => "On Hold",
-        _ => s.ToString()
-    };
-
-    private static string StatusBadgeClass(ProjectStatus s) => s switch
-    {
-        ProjectStatus.InProgress => "bg-blue-50 text-blue-700 ring-1 ring-blue-600/20 dark:bg-blue-400/10 dark:text-blue-400",
-        ProjectStatus.Completed  => "bg-green-50 text-green-700 ring-1 ring-green-600/20 dark:bg-green-400/10 dark:text-green-400",
-        ProjectStatus.Blocked    => "bg-red-50 text-red-700 ring-1 ring-red-600/20 dark:bg-red-400/10 dark:text-red-400",
-        ProjectStatus.OnHold     => "bg-yellow-50 text-yellow-700 ring-1 ring-yellow-600/20 dark:bg-yellow-400/10 dark:text-yellow-400",
-        ProjectStatus.Pending    => "bg-slate-100 text-slate-600 ring-1 ring-slate-500/20 dark:bg-white/5 dark:text-neutral-400",
-        _ => ""
-    };
-
-    private static string InvoiceBadgeClass(InvoiceStatus s) => s switch
-    {
-        InvoiceStatus.Paid    => "bg-green-50 text-green-700 ring-1 ring-green-600/20 dark:bg-green-400/10 dark:text-green-400",
-        InvoiceStatus.Sent    => "bg-blue-50 text-blue-700 ring-1 ring-blue-600/20 dark:bg-blue-400/10 dark:text-blue-400",
-        InvoiceStatus.Overdue => "bg-red-50 text-red-700 ring-1 ring-red-600/20 dark:bg-red-400/10 dark:text-red-400",
-        InvoiceStatus.Draft   => "bg-slate-100 text-slate-600 ring-1 ring-slate-500/20 dark:bg-white/5 dark:text-neutral-400",
-        _ => ""
-    };
-}

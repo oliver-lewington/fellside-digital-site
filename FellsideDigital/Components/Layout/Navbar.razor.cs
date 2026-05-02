@@ -3,12 +3,24 @@ using Microsoft.AspNetCore.Components.Routing;
 
 namespace FellsideDigital.Components.Layout;
 
+public enum NavbarLayoutMode
+{
+    Centered,
+    Wide
+}
+
 public partial class Navbar : ComponentBase, IDisposable
 {
     private bool _mobileMenuOpen;
     private bool _hasNotifications = true;
 
     private string? currentUrl;
+
+    [Parameter] public NavbarLayoutMode LayoutMode { get; set; } = NavbarLayoutMode.Centered;
+
+    private string ContainerClass => LayoutMode == NavbarLayoutMode.Wide
+        ? "w-full px-2 sm:px-6 lg:px-8"
+        : "mx-auto max-w-7xl px-2 sm:px-6 lg:px-8";
 
     [Inject] private NavigationManager NavigationManager { get; set; } = default!;
 

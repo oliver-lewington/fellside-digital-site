@@ -28,10 +28,6 @@ services:
 
   fellside_digital_postgres:
     image: postgres:15
-      - fellside_digital_postgres
-
-  fellside_digital_postgres:
-    image: postgres:15
     container_name: fellside_digital_postgres
     restart: unless-stopped
     environment:

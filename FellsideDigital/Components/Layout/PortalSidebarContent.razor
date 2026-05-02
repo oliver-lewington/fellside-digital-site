@@ -2,9 +2,9 @@
 
 <div class="flex h-16 shrink-0 items-center">
     <NavLink href="/" class="flex items-center gap-x-3">
-        <img src="/favicon.ico" class="h-8 w-auto dark:hidden" alt="Fellside Digital" />
-        <img src="/favicon-dark.ico" class="h-8 w-auto not-dark:hidden" alt="Fellside Digital" />
-        <span class="text-sm font-semibold text-gray-900 dark:text-white">Fellside Digital</span>
+        <img src="/favicon.ico" class="h-8 w-auto dark:hidden" alt="Company Logo" />
+        <img src="/favicon-dark.ico" class="h-8 w-auto not-dark:hidden" alt="Company Logo" />
+        <span class="text-sm font-semibold text-gray-900 dark:text-white">@CompanyName</span>
     </NavLink>
 </div>
 
@@ -72,4 +72,5 @@
 @code {
     [Parameter] public string UserName { get; set; } = "";
     [Parameter] public string UserInitials { get; set; } = "";
+    [Parameter] public string CompanyName { get; set; } = "No company name saved.";
 }
