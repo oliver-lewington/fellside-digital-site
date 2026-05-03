@@ -1,13 +1,8 @@
-﻿using Microsoft.AspNetCore.Components;
+﻿using FellsideDigital.UI.Enums;
+using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Routing;
 
 namespace FellsideDigital.Web.Components.Layout;
-
-public enum NavbarLayoutMode
-{
-    Centered,
-    Wide
-}
 
 public partial class Navbar : ComponentBase, IDisposable
 {

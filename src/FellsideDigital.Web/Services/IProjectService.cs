@@ -1,3 +1,4 @@
+using FellsideDigital.Domain.Enums;
 using FellsideDigital.Web.Data;
 
 namespace FellsideDigital.Web.Services;

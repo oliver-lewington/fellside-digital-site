@@ -1,3 +1,5 @@
+using FellsideDigital.Domain.Enums;
+
 namespace FellsideDigital.Web.Data;
 
 public class ProjectStatusUpdate

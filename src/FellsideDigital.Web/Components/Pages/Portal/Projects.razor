@@ -88,7 +88,7 @@ else
                 <div class="flex items-center gap-3 shrink-0 ml-4">
                     <span class="hidden sm:block">
                         <StatusBadge CssClasses="@BadgeHelpers.ProjectStatusBadge(project.Status)"
-                                     Label="@BadgeHelpers.StatusLabel(project.Status)" />
+                                     Label="@project.Status.DisplayName()" />
                     </span>
                     <svg class="size-4 text-gray-300 dark:text-neutral-600 group-hover:text-indigo-400 dark:group-hover:text-orange-400 transition-colors" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />

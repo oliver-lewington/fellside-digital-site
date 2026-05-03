@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FellsideDigital.UI", "src\F
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FellsideDigital.Web", "src\FellsideDigital.Web\FellsideDigital.Web.csproj", "{EC5F1E45-232E-5E19-9D68-B582B1327B0F}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FellsideDigital.Domain", "src\FellsideDigital.Domain\FellsideDigital.Domain.csproj", "{B4FEFCE2-D8C8-4DDF-9AD1-E278D0D6E719}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{EC5F1E45-232E-5E19-9D68-B582B1327B0F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EC5F1E45-232E-5E19-9D68-B582B1327B0F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EC5F1E45-232E-5E19-9D68-B582B1327B0F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B4FEFCE2-D8C8-4DDF-9AD1-E278D0D6E719}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B4FEFCE2-D8C8-4DDF-9AD1-E278D0D6E719}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B4FEFCE2-D8C8-4DDF-9AD1-E278D0D6E719}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B4FEFCE2-D8C8-4DDF-9AD1-E278D0D6E719}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

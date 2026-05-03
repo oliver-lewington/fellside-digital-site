@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using FellsideDigital.Domain.Enums;
 using FellsideDigital.Web.Data;
 using FellsideDigital.Web.Services;
 using Microsoft.AspNetCore.Components;

@@ -8,12 +8,12 @@
 @using FellsideDigital.Web.Services
 @using FellsideDigital.Web.Components.Layout
 @using FellsideDigital.Web.Components.Shared
+@using FellsideDigital.Domain.Extensions
 
 <PageTitle>@(_project?.Name ?? "Project") — Fellside Digital Portal</PageTitle>
 
 @if (_project is null && !_notFound)
 {
-    <!-- Skeleton loader -->
     <div class="animate-pulse space-y-6">
         <div class="h-4 w-24 rounded-md bg-gray-200 dark:bg-white/10"></div>
         <div class="h-8 w-64 rounded-lg bg-gray-200 dark:bg-white/10"></div>
@@ -28,36 +28,43 @@
 }
 else if (_notFound)
 {
-    <div class="rounded-2xl border border-dashed border-gray-200 dark:border-white/10 p-14 text-center bg-white dark:bg-neutral-900">
-        <p class="text-sm font-semibold text-gray-900 dark:text-white">Project not found</p>
-        <p class="mt-1 text-sm text-gray-500 dark:text-neutral-400">This project doesn't exist or you don't have access to it.</p>
-        <NavLink href="/Portal/Projects" class="mt-4 inline-flex text-sm font-medium text-indigo-500 dark:text-orange-400 hover:underline">
-            ← Back to projects
-        </NavLink>
-    </div>
+    <EmptyState Padding="p-14"
+                IconContainerClass="size-12 rounded-2xl mb-4"
+                Title="Project not found"
+                Subtitle="This project doesn't exist or you don't have access to it.">
+        <Icon>
+            <svg class="size-6 text-gray-400 dark:text-neutral-500" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12.75V12A2.25 2.25 0 0 1 4.5 9.75h15A2.25 2.25 0 0 1 21.75 12v.75m-8.69-6.44-2.12-2.12a1.5 1.5 0 0 0-1.061-.44H4.5A2.25 2.25 0 0 0 2.25 6v12a2.25 2.25 0 0 0 2.25 2.25h15A2.25 2.25 0 0 0 21.75 18V9a2.25 2.25 0 0 0-2.25-2.25h-5.379a1.5 1.5 0 0 1-1.06-.44Z" />
+            </svg>
+        </Icon>
+        <Actions>
+            <a href="/Portal/Projects" class="text-sm font-medium text-indigo-500 dark:text-orange-400 hover:underline">
+                ← Back to projects
+            </a>
+        </Actions>
+    </EmptyState>
 }
 else if (_project is not null)
 {
     <!-- Back + Page header -->
     <div class="mb-6">
-        <NavLink href="/Portal/Projects"
-                 class="inline-flex items-center gap-1 text-xs font-medium text-gray-500 dark:text-neutral-400 hover:text-gray-900 dark:hover:text-white transition-colors mb-3">
+        <a href="/Portal/Projects"
+           class="inline-flex items-center gap-1 text-xs font-medium text-gray-500 dark:text-neutral-400 hover:text-gray-900 dark:hover:text-white transition-colors mb-3">
             <svg class="size-3.5" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
             </svg>
             My projects
-        </NavLink>
+        </a>
         <div class="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
             <div>
                 <div class="flex flex-wrap items-center gap-3">
                     <h1 class="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">@_project.Name</h1>
                     <span class="inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-medium @BadgeHelpers.ProjectStatusBadge(_project.Status)">
                         <span class="size-1.5 rounded-full @BadgeHelpers.ProjectStatusDotColor(_project.Status)"></span>
-                        @BadgeHelpers.StatusLabel(_project.Status)
+                       @_project.Status.DisplayName()
                     </span>
-                    <span class="inline-flex items-center rounded-full px-3 py-1 text-xs font-medium bg-gray-100 text-gray-600 dark:bg-white/5 dark:text-neutral-400">
-                        @_project.Type
-                    </span>
+                    <StatusBadge CssClasses="bg-gray-100 text-gray-600 dark:bg-white/5 dark:text-neutral-400"
+                                 Label="@_project.Type.DisplayName()" />
                 </div>
                 <p class="mt-1 text-sm text-gray-500 dark:text-neutral-400">
                     Started @_project.CreatedAt.ToLocalTime().ToString("d MMMM yyyy")
@@ -65,13 +72,12 @@ else if (_project is not null)
             </div>
             @if (!string.IsNullOrEmpty(_project.ProjectUrl))
             {
-                <a href="@_project.ProjectUrl" target="_blank" rel="noopener"
-                   class="inline-flex items-center gap-2 rounded-xl bg-indigo-400 dark:bg-orange-400 px-4 py-2 text-sm font-semibold text-white hover:opacity-90 transition shrink-0 shadow-sm">
+                <PrimaryButton Href="@_project.ProjectUrl">
                     <svg class="size-4" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 6H5.25A2.25 2.25 0 0 0 3 8.25v10.5A2.25 2.25 0 0 0 5.25 21h10.5A2.25 2.25 0 0 0 18 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25" />
                     </svg>
                     View live site
-                </a>
+                </PrimaryButton>
             }
         </div>
     </div>
@@ -110,10 +116,7 @@ else if (_project is not null)
             <!-- Invoices card -->
             @if (_project.Invoices.Any())
             {
-                <div class="rounded-2xl border border-gray-200/80 dark:border-white/5 bg-white dark:bg-neutral-900 shadow-sm overflow-hidden">
-                    <div class="px-6 py-4 border-b border-gray-100 dark:border-white/5">
-                        <h2 class="text-sm font-semibold text-gray-900 dark:text-white">Invoices</h2>
-                    </div>
+                <CardSection Title="Invoices">
                     <ul role="list" class="divide-y divide-gray-100 dark:divide-white/5">
                         @foreach (var inv in _project.Invoices.OrderByDescending(i => i.IssuedAt))
                         {
@@ -129,9 +132,8 @@ else if (_project is not null)
                                 </div>
                                 <div class="flex items-center gap-3 shrink-0">
                                     <span class="text-sm font-semibold text-gray-900 dark:text-white">@inv.Currency @inv.Amount.ToString("N2")</span>
-                                    <span class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium @BadgeHelpers.InvoiceStatusBadge(inv.Status)">
-                                        @inv.Status
-                                    </span>
+                                    <StatusBadge CssClasses="@BadgeHelpers.InvoiceStatusBadge(inv.Status)"
+                                                 Label="@inv.Status.ToString()" />
                                     @if (!string.IsNullOrEmpty(inv.FilePath))
                                     {
                                         <a href="@inv.FilePath" download="@inv.FileName"
@@ -146,19 +148,13 @@ else if (_project is not null)
                             </li>
                         }
                     </ul>
-                </div>
+                </CardSection>
             }
         </div>
 
-
-
-        <!-- Right: activity timeline -->
+        <!-- Right: project details + activity timeline -->
         <div>
-            <!-- Project details card -->
-            <div class="mb-6 rounded-2xl border border-gray-200/80 dark:border-white/5 bg-white dark:bg-neutral-900 shadow-sm overflow-hidden">
-                <div class="px-6 py-4 border-b border-gray-100 dark:border-white/5">
-                    <h2 class="text-sm font-semibold text-gray-900 dark:text-white">Project details</h2>
-                </div>
+            <CardSection Title="Project details" Class="mb-6">
                 <dl class="divide-y divide-gray-100 dark:divide-white/5">
                     <div class="grid grid-cols-1 sm:grid-cols-2">
                         <div class="px-6 py-4">
@@ -182,11 +178,9 @@ else if (_project is not null)
                         </div>
                     }
                 </dl>
-            </div>
-            <div class="rounded-2xl border border-gray-200/80 dark:border-white/5 bg-white dark:bg-neutral-900 shadow-sm overflow-hidden">
-                <div class="px-6 py-4 border-b border-gray-100 dark:border-white/5">
-                    <h2 class="text-sm font-semibold text-gray-900 dark:text-white">Project updates</h2>
-                </div>
+            </CardSection>
+
+            <CardSection Title="Project updates">
                 <div class="px-6 py-5">
                     @if (!_project.StatusUpdates.Any())
                     {
@@ -233,7 +227,7 @@ else if (_project is not null)
                                         {
                                             <p class="text-xs text-gray-500 dark:text-neutral-400 mb-0.5">
                                                 Status →
-                                                <span class="font-semibold text-gray-900 dark:text-white">@BadgeHelpers.StatusLabel(update.NewStatus.Value)</span>
+                                                <span class="font-semibold text-gray-900 dark:text-white">@update.NewStatus.Value.DisplayName()</span>
                                             </p>
                                         }
                                         <p class="text-sm text-gray-700 dark:text-neutral-300 leading-relaxed">@update.Message</p>
@@ -246,7 +240,7 @@ else if (_project is not null)
                         </ul>
                     }
                 </div>
-            </div>
+            </CardSection>
         </div>
     </div>
 }

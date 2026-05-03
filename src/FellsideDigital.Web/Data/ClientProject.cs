@@ -1,19 +1,6 @@
+using FellsideDigital.Domain.Enums;
+
 namespace FellsideDigital.Web.Data;
-
-public enum ProjectStatus
-{
-    Pending,
-    InProgress,
-    Blocked,
-    OnHold,
-    Completed
-}
-
-public enum ProjectType
-{
-    Website,
-    Automation
-}
 
 public class ClientProject
 {

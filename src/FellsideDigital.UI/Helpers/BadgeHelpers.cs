@@ -4,6 +4,13 @@ namespace FellsideDigital.Web.Components.Shared;
 
 public static class BadgeHelpers
 {
+    public static string StatusLabel(ProjectStatus s) => s switch
+    {
+        ProjectStatus.InProgress => "In Progress",
+        ProjectStatus.OnHold     => "On Hold",
+        _                        => s.ToString()
+    };
+
     public static string ProjectStatusBadge(ProjectStatus s) => s switch
     {
         ProjectStatus.InProgress => "bg-blue-50 text-blue-700 ring-1 ring-blue-600/20 dark:bg-blue-400/10 dark:text-blue-400",

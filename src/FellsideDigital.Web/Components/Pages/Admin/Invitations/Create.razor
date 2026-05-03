@@ -12,15 +12,14 @@
 
 <PageTitle>New Invitation — Fellside Digital Admin</PageTitle>
 
-<!-- Header -->
 <div class="mb-8">
-    <NavLink href="/Admin/Invitations"
-             class="inline-flex items-center gap-1 text-xs font-medium text-gray-500 dark:text-neutral-400 hover:text-gray-900 dark:hover:text-white transition-colors mb-3">
+    <a href="/Admin/Invitations"
+       class="inline-flex items-center gap-1 text-xs font-medium text-gray-500 dark:text-neutral-400 hover:text-gray-900 dark:hover:text-white transition-colors mb-3">
         <svg class="size-3.5" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
         </svg>
         Invitations
-    </NavLink>
+    </a>
     <h1 class="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">New client invitation</h1>
     <p class="mt-1 text-sm text-gray-500 dark:text-neutral-400">
         Fill in the client details. They'll receive an invitation link to set up their account. Links expire in 7 days.
@@ -69,7 +68,6 @@
         <EditForm Model="Input" OnValidSubmit="CreateInvitationAsync" class="space-y-6">
             <DataAnnotationsValidator />
 
-            <!-- Name row -->
             <div class="grid grid-cols-1 gap-5 sm:grid-cols-2">
                 <div>
                     <label class="block text-sm font-medium text-gray-900 dark:text-white mb-1.5">
@@ -87,7 +85,6 @@
                 </div>
             </div>
 
-            <!-- Email -->
             <div>
                 <label class="block text-sm font-medium text-gray-900 dark:text-white mb-1.5">
                     Email address <span class="text-red-500">*</span>
@@ -96,7 +93,6 @@
                 <ValidationMessage For="() => Input.Email" class="mt-1 text-xs text-red-600 dark:text-red-400" />
             </div>
 
-            <!-- Company -->
             <div>
                 <label class="block text-sm font-medium text-gray-900 dark:text-white mb-1.5">
                     Company name <span class="text-red-500">*</span>
@@ -105,7 +101,6 @@
                 <ValidationMessage For="() => Input.CompanyName" class="mt-1 text-xs text-red-600 dark:text-red-400" />
             </div>
 
-            <!-- Service type -->
             <div>
                 <label class="block text-sm font-medium text-gray-900 dark:text-white mb-1.5">
                     Service type <span class="text-red-500">*</span>
@@ -120,7 +115,6 @@
                 <ValidationMessage For="() => Input.ServiceType" class="mt-1 text-xs text-red-600 dark:text-red-400" />
             </div>
 
-            <!-- Project description -->
             <div>
                 <label class="block text-sm font-medium text-gray-900 dark:text-white mb-1.5">
                     Project description <span class="text-red-500">*</span>
@@ -131,7 +125,6 @@
                 <ValidationMessage For="() => Input.ProjectDescription" class="mt-1 text-xs text-red-600 dark:text-red-400" />
             </div>
 
-            <!-- Internal notes -->
             <div>
                 <label class="block text-sm font-medium text-gray-900 dark:text-white mb-1.5">
                     Internal notes
@@ -142,30 +135,17 @@
                                class="@($"{InputClass} resize-none")" />
             </div>
 
-            <!-- Actions -->
             <div class="flex items-center justify-end gap-4 pt-2 border-t border-gray-100 dark:border-white/5">
-                <NavLink href="/Admin/Invitations"
-                         class="text-sm font-medium text-gray-500 dark:text-neutral-400 hover:text-gray-900 dark:hover:text-white transition-colors">
+                <a href="/Admin/Invitations"
+                   class="text-sm font-medium text-gray-500 dark:text-neutral-400 hover:text-gray-900 dark:hover:text-white transition-colors">
                     Cancel
-                </NavLink>
-                <button type="submit" disabled="@_submitting"
-                        class="inline-flex items-center gap-2 rounded-xl bg-indigo-400 dark:bg-orange-400 px-5 py-2.5 text-sm font-semibold text-white shadow-sm hover:opacity-90 disabled:opacity-60 disabled:cursor-not-allowed transition-all">
-                    @if (_submitting)
-                    {
-                        <svg class="size-4 animate-spin" fill="none" viewBox="0 0 24 24">
-                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                        </svg>
-                        <span>Sending…</span>
-                    }
-                    else
-                    {
-                        <svg class="size-4" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 0 1-2.25 2.25h-15a2.25 2.25 0 0 1-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25m19.5 0v.243a2.25 2.25 0 0 1-1.07 1.916l-7.5 4.615a2.25 2.25 0 0 1-2.36 0L3.32 8.91a2.25 2.25 0 0 1-1.07-1.916V6.75" />
-                        </svg>
-                        <span>Send invitation</span>
-                    }
-                </button>
+                </a>
+                <SpinnerButton IsLoading="@_submitting" LoadingText="Sending…" Class="px-5">
+                    <svg class="size-4" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 0 1-2.25 2.25h-15a2.25 2.25 0 0 1-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25m19.5 0v.243a2.25 2.25 0 0 1-1.07 1.916l-7.5 4.615a2.25 2.25 0 0 1-2.36 0L3.32 8.91a2.25 2.25 0 0 1-1.07-1.916V6.75" />
+                    </svg>
+                    <span>Send invitation</span>
+                </SpinnerButton>
             </div>
         </EditForm>
     </div>

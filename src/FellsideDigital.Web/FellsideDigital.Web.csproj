@@ -30,6 +30,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <ProjectReference Include="..\FellsideDigital.Domain\FellsideDigital.Domain.csproj" />
 	  <ProjectReference Include="..\FellsideDigital.UI\FellsideDigital.UI.csproj" />
 	</ItemGroup>
 

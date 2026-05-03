@@ -1,12 +1,6 @@
-namespace FellsideDigital.Web.Data;
+using FellsideDigital.Domain.Enums;
 
-public enum InvoiceStatus
-{
-    Draft,
-    Sent,
-    Paid,
-    Overdue
-}
+namespace FellsideDigital.Web.Data;
 
 public class Invoice
 {

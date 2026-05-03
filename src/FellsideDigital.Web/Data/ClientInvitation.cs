@@ -1,12 +1,6 @@
-namespace FellsideDigital.Web.Data;
+using FellsideDigital.Domain.Enums;
 
-public enum InvitationStatus
-{
-    Pending,
-    Accepted,
-    Expired,
-    Revoked
-}
+namespace FellsideDigital.Web.Data;
 
 public class ClientInvitation
 {

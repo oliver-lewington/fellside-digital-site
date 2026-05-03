@@ -1,3 +1,4 @@
+@using FellsideDigital.Domain.Enums
 @using FellsideDigital.Web.Components.Home
 @inject IJSRuntime JS
 
@@ -167,16 +168,6 @@
 </section>
 
 @code {
-
-    private enum ServiceVisual
-    {
-        WorkflowDots,
-        IntegrationBars,
-        AiPulse,
-        ReportingChart,
-        BrowserMockup,
-        DesignGrid
-    }
 
     private record ServiceRow(
         string Number,

@@ -20,6 +20,10 @@
     <Folder Include="Theme\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\FellsideDigital.Domain\FellsideDigital.Domain.csproj" />
+  </ItemGroup>
+
 
 
 </Project>
