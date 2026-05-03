@@ -3,8 +3,8 @@ services:
     container_name: fellside_digital
     image: ${DOCKER_REGISTRY-}fellsidedigital
     build:
-      context: .
-      dockerfile: FellsideDigital/Dockerfile
+      context: ./src
+      dockerfile: FellsideDigital.Web/Dockerfile
     environment:
       # Application Settings
       - ConnectionStrings__DefaultConnection=Host=fellside_digital_postgres;Port=5432;Database=${POSTGRES_DB};Username=${POSTGRES_USER};Password=${POSTGRES_PASSWORD}
