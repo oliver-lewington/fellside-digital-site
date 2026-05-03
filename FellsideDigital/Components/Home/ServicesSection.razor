@@ -14,11 +14,11 @@
             <h2 id="services-heading"
                 class="animated mt-2 text-3xl font-semibold
                 text-slate-900 dark:text-neutral-100">
-                Everything you need, automated.
+                Everything your business needs.
             </h2>
             <p id="services-sub"
                class="animated mt-3 text-base text-slate-500 dark:text-neutral-400 max-w-2xl">
-                Four core disciplines. One joined-up partner.
+                Premium web design and intelligent automation, all under one roof.
             </p>
         </div>
 
@@ -100,6 +100,35 @@
                                     <div class="flex-1 rounded-t-md bg-indigo-400/40 dark:bg-orange-400/40" style="height:62px"></div>
                                 </div>
                                 break;
+
+                            case ServiceVisual.BrowserMockup:
+                                <div class="flex flex-col gap-2 w-2/3">
+                                    <div class="h-7 w-full rounded-md bg-slate-100 dark:bg-neutral-800 flex items-center px-3 gap-2">
+                                        <div class="w-2 h-2 rounded-full bg-slate-300 dark:bg-neutral-600 flex-shrink-0"></div>
+                                        <div class="h-1.5 flex-1 rounded-full bg-slate-200 dark:bg-neutral-700"></div>
+                                    </div>
+                                    <div class="flex gap-3">
+                                        <div class="flex flex-col gap-1.5 flex-1 pt-1">
+                                            <div class="h-2 rounded-full bg-indigo-400/60 dark:bg-orange-400/60 w-full"></div>
+                                            <div class="h-2 rounded-full bg-indigo-400/30 dark:bg-orange-400/30 w-3/4"></div>
+                                            <div class="h-2 rounded-full bg-slate-200 dark:bg-neutral-700 w-1/2"></div>
+                                            <div class="h-2 rounded-full bg-slate-200 dark:bg-neutral-700 w-5/6 mt-1"></div>
+                                            <div class="h-2 rounded-full bg-slate-200 dark:bg-neutral-700 w-2/3"></div>
+                                        </div>
+                                        <div class="w-20 h-20 rounded-md bg-indigo-400/20 dark:bg-orange-400/20 flex-shrink-0"></div>
+                                    </div>
+                                </div>
+                                break;
+
+                            case ServiceVisual.DesignGrid:
+                                <div class="grid grid-cols-3 gap-2 w-48">
+                                    <div class="rounded-lg bg-indigo-400 dark:bg-orange-400 aspect-square"></div>
+                                    <div class="rounded-lg bg-indigo-400/60 dark:bg-orange-400/60 aspect-square"></div>
+                                    <div class="rounded-lg bg-indigo-400/40 dark:bg-orange-400/40 aspect-square"></div>
+                                    <div class="rounded-lg bg-slate-200 dark:bg-neutral-700 aspect-square col-span-2"></div>
+                                    <div class="rounded-lg bg-indigo-400/20 dark:bg-orange-400/20 aspect-square"></div>
+                                </div>
+                                break;
                         }
 
                     </div>
@@ -144,7 +173,9 @@
         WorkflowDots,
         IntegrationBars,
         AiPulse,
-        ReportingChart
+        ReportingChart,
+        BrowserMockup,
+        DesignGrid
     }
 
     private record ServiceRow(
@@ -159,27 +190,41 @@
     [
         new(
             Number: "01",
+            Title: "Custom Website Design",
+            Description: "Beautifully crafted, high-performance websites designed to reflect your brand and convert visitors. No templates — every pixel is built for you.",
+            Tags: ["Bespoke design", "Blazor & .NET", "Mobile-first"],
+            Visual: ServiceVisual.BrowserMockup
+        ),
+        new(
+            Number: "02",
             Title: "Workflow Automation",
             Description: "Map, streamline, and automate your repetitive internal processes, from approvals and notifications to task handoffs and status updates.",
             Tags: ["Approvals", "Notifications", "Task routing"],
             Visual: ServiceVisual.WorkflowDots
         ),
         new(
-            Number: "02",
+            Number: "03",
+            Title: "E-Commerce & Web Applications",
+            Description: "Full-featured web applications and online stores built from the ground up — custom portals, dashboards, booking systems, and more.",
+            Tags: ["E-Commerce", "Client portals", "Custom dashboards"],
+            Visual: ServiceVisual.DesignGrid
+        ),
+        new(
+            Number: "04",
             Title: "API & Systems Integration",
-            Description: "Break down data silos by connecting your existing tools - CRMs, business systems, databases, and third-party platforms, into a single, unified workflow.",
+            Description: "Break down data silos by connecting your existing tools — CRMs, business systems, databases, and third-party platforms — into a single, unified workflow.",
             Tags: ["CRM", "Business systems", "Third-party APIs"],
             Visual: ServiceVisual.IntegrationBars
         ),
         new(
-            Number: "03",
+            Number: "05",
             Title: "AI-Powered Automation",
             Description: "Go beyond rules-based logic. We embed AI into your workflows to handle unstructured data, intelligent decisions, and dynamic task routing.",
             Tags: ["Intelligent routing", "Unstructured data", "Decision engines"],
             Visual: ServiceVisual.AiPulse
         ),
         new(
-            Number: "04",
+            Number: "06",
             Title: "Data & Reporting Automation",
             Description: "Eliminate manual reporting. Automatically collect, transform, and deliver accurate insights to the right people at the right time.",
             Tags: ["Dashboards", "Scheduled reports", "Data pipelines"],

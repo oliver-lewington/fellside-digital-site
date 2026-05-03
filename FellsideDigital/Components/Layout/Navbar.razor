@@ -1,14 +1,15 @@
 @using FellsideDigital.Components.Shared.Navbar
 @using Microsoft.AspNetCore.Components.Authorization
 
-<nav class="fixed inset-x-0 top-0 z-50
+<nav id="site-nav"
+     class="fixed inset-x-0 top-0 z-50
     border-b border-gray-200 dark:border-white/10
     bg-white/80 dark:bg-gray-900/80
     backdrop-blur-2xl backdrop-saturate-200
     supports-[backdrop-filter]:bg-white/70
     dark:supports-[backdrop-filter]:bg-gray-900/70">
 
-    <div class="mx-auto max-w-7xl px-2 sm:px-6 lg:px-8">
+    <div class="@ContainerClass">
         <div class="relative flex h-16 justify-between">
 
             <div class="absolute inset-y-0 left-0 flex items-center sm:hidden">
