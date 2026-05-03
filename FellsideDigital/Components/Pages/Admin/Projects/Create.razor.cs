@@ -20,9 +20,9 @@ public partial class Create : ComponentBase
     private bool _submitting;
 
     private const string InputClass =
-        "block w-full rounded-md bg-white px-3 py-1.5 text-sm text-slate-900 outline-1 -outline-offset-1 outline-slate-300 " +
-        "placeholder:text-slate-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-400 " +
-        "dark:bg-white/5 dark:text-neutral-100 dark:outline-white/10 dark:placeholder:text-neutral-500 dark:focus:outline-orange-400";
+        "block w-full rounded-xl bg-gray-50 dark:bg-white/5 px-3.5 py-2.5 text-sm text-gray-900 dark:text-white " +
+        "ring-1 ring-inset ring-gray-200 dark:ring-white/10 placeholder:text-gray-400 dark:placeholder:text-neutral-500 " +
+        "focus:ring-2 focus:ring-inset focus:ring-indigo-400 dark:focus:ring-orange-400 transition-shadow outline-none";
 
     protected override async Task OnInitializedAsync()
     {
@@ -67,13 +67,6 @@ public partial class Create : ComponentBase
             _submitting = false;
         }
     }
-
-    private static string StatusLabel(ProjectStatus s) => s switch
-    {
-        ProjectStatus.InProgress => "In Progress",
-        ProjectStatus.OnHold => "On Hold",
-        _ => s.ToString()
-    };
 
     private sealed class InputModel
     {

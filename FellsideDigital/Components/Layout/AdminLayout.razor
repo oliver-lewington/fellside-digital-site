@@ -22,7 +22,7 @@
                         </button>
                     </div>
                     <div class="flex grow flex-col gap-y-5 overflow-y-auto bg-white dark:bg-neutral-950 px-6 shadow-2xl">
-                        <PortalSidebarContent UserName="@_displayName" UserInitials="@_initials" />
+                        <AdminSidebarContent UserName="@_displayName" UserInitials="@_initials" />
                     </div>
                 </div>
             </div>
@@ -32,20 +32,20 @@
     <!-- Static sidebar for desktop -->
     <div class="hidden xl:fixed xl:top-16 xl:bottom-0 xl:z-50 xl:flex xl:w-72 xl:flex-col">
         <div class="flex grow flex-col gap-y-5 overflow-y-auto bg-white dark:bg-neutral-950 border-r border-gray-200/80 dark:border-white/5 px-6">
-            <PortalSidebarContent UserName="@_displayName" UserInitials="@_initials" />
+            <AdminSidebarContent UserName="@_displayName" UserInitials="@_initials" />
         </div>
     </div>
 
-    <!-- Mobile top bar (below global Navbar) -->
+    <!-- Mobile top bar -->
     <div class="sticky top-16 z-40 flex h-12 shrink-0 items-center gap-x-4 border-b border-gray-200 dark:border-white/5 bg-white/80 dark:bg-neutral-950/80 backdrop-blur-sm px-4 sm:gap-x-6 sm:px-6 xl:hidden">
-        <button type="button" class="-m-2.5 p-2.5 text-gray-700 dark:text-neutral-300" @onclick="OpenSidebar">
+        <button type="button" class="-m-2.5 p-2.5 text-gray-700 dark:text-neutral-300 xl:hidden" @onclick="OpenSidebar">
             <span class="sr-only">Open sidebar</span>
             <svg class="size-5" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
             </svg>
         </button>
         <div class="h-4 w-px bg-gray-200 dark:bg-white/10"></div>
-        <span class="text-sm font-semibold text-gray-900 dark:text-white">My Portal</span>
+        <span class="text-sm font-semibold text-gray-900 dark:text-white">Admin</span>
     </div>
 
     <div class="xl:pl-72">
