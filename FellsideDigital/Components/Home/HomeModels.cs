@@ -62,6 +62,28 @@ public static class HomeData
     public static readonly List<Service> Services =
     [
         new(
+        Title: "Custom Website Design",
+        Description: "Beautifully crafted, high-performance websites designed to reflect your brand and convert visitors. No templates — every pixel is built for you.",
+        IconSvg: """
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none"
+                 viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.75">
+              <path stroke-linecap="round" stroke-linejoin="round"
+                    d="M9 17.25v1.007a3 3 0 01-.879 2.122L7.5 21h9l-.621-.621A3 3 0 0115 18.257V17.25m6-12V15a2.25 2.25 0 01-2.25 2.25H5.25A2.25 2.25 0 013 15V5.25m18 0A2.25 2.25 0 0018.75 3H5.25A2.25 2.25 0 003 5.25m18 0H3"/>
+            </svg>
+        """
+    ),
+    new(
+        Title: "E-Commerce & Web Applications",
+        Description: "Full-featured web applications and online stores built from the ground up — custom portals, dashboards, booking systems, and more.",
+        IconSvg: """
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none"
+                 viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.75">
+              <path stroke-linecap="round" stroke-linejoin="round"
+                    d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 00-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 00-16.536-1.84M7.5 14.25L5.106 5.272M6 20.25a.75.75 0 11-1.5 0 .75.75 0 011.5 0zm12.75 0a.75.75 0 11-1.5 0 .75.75 0 011.5 0z"/>
+            </svg>
+        """
+    ),
+    new(
         Title: "Workflow Automation",
         Description: "Map, streamline, and automate your repetitive internal processes — from approvals and notifications to task handoffs and status updates.",
         IconSvg: """
@@ -174,7 +196,7 @@ public static class HomeData
 
         new Faq(
             "What kind of projects do you take on?",
-            "We specialise in custom web applications, client portals, internal dashboards, e-commerce platforms, and bespoke software systems. We work with SMEs, agencies, and non-profits across the UK."),
+            "We build premium websites, custom web applications, e-commerce platforms, client portals, internal dashboards, and intelligent automation systems. We work with SMEs, agencies, and non-profits across the UK."),
 
         new Faq(
             "What technology stack do you use?",

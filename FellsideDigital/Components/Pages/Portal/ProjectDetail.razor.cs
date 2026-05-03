@@ -17,6 +17,7 @@ public partial class ProjectDetail : ComponentBase
 
     private ClientProject? _project;
     private bool _notFound;
+    private bool _canEmbedPreview;
 
     protected override async Task OnInitializedAsync()
     {
@@ -29,6 +30,7 @@ public partial class ProjectDetail : ComponentBase
         {
             _notFound = true;
             _project = null;
+            return;
         }
     }
 
