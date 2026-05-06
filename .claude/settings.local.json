@@ -11,7 +11,9 @@
       "Bash(docker container *)",
       "Bash(mkdir -p \"C:/Users/Home/.claude/plugins/marketplaces/local-desktop-app-uploads/fellside-digital-ui/skills/fellside-digital-ui\")",
       "Bash(mv \"C:/Users/Home/.claude/plugins/marketplaces/local-desktop-app-uploads/fellside-digital-ui/SKILL.md\" \"C:/Users/Home/.claude/plugins/marketplaces/local-desktop-app-uploads/fellside-digital-ui/skills/fellside-digital-ui/SKILL.md\")",
-      "Read(//c/Users/Home/.claude/plugins/marketplaces/local-desktop-app-uploads/fellside-digital-ui/skills/fellside-digital-ui/**)"
+      "Read(//c/Users/Home/.claude/plugins/marketplaces/local-desktop-app-uploads/fellside-digital-ui/skills/fellside-digital-ui/**)",
+      "Bash(xargs grep *)",
+      "Bash(xargs wc *)"
     ]
   }
 }
