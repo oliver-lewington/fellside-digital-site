@@ -17,57 +17,12 @@ namespace FellsideDigital.Web.Data.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "9.0.9")
+                .HasAnnotation("ProductVersion", "10.0.4")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("FellsideDigital.Web.Data.ContactEnquiry", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("Budget")
-                        .HasColumnType("text");
-
-                    b.Property<string>("Company")
-                        .HasColumnType("text");
-
-                    b.Property<string>("Email")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("HowHeard")
-                        .HasColumnType("text");
-
-                    b.Property<bool>("IsRead")
-                        .HasColumnType("boolean");
-
-                    b.Property<string>("Message")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("Phone")
-                        .HasColumnType("text");
-
-                    b.Property<string>("ServiceType")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<DateTimeOffset>("SubmittedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("ContactEnquiries");
-                });
-
-            modelBuilder.Entity("FellsideDigital.Data.ApplicationUser", b =>
+            modelBuilder.Entity("FellsideDigital.Web.Data.ApplicationUser", b =>
                 {
                     b.Property<string>("Id")
                         .HasColumnType("text");
@@ -154,7 +109,7 @@ namespace FellsideDigital.Web.Data.Migrations
                     b.ToTable("AspNetUsers", (string)null);
                 });
 
-            modelBuilder.Entity("FellsideDigital.Data.ClientInvitation", b =>
+            modelBuilder.Entity("FellsideDigital.Web.Data.ClientInvitation", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -223,7 +178,7 @@ namespace FellsideDigital.Web.Data.Migrations
                     b.ToTable("ClientInvitations");
                 });
 
-            modelBuilder.Entity("FellsideDigital.Data.ClientProject", b =>
+            modelBuilder.Entity("FellsideDigital.Web.Data.ClientProject", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -254,11 +209,17 @@ namespace FellsideDigital.Web.Data.Migrations
                     b.Property<string>("PreviewUrl")
                         .HasColumnType("text");
 
+                    b.Property<int>("Progress")
+                        .HasColumnType("integer");
+
                     b.Property<string>("ProjectUrl")
                         .HasColumnType("text");
 
                     b.Property<int>("Status")
                         .HasColumnType("integer");
+
+                    b.Property<DateTime?>("TargetLaunchDate")
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<int>("Type")
                         .HasColumnType("integer");
@@ -275,7 +236,52 @@ namespace FellsideDigital.Web.Data.Migrations
                     b.ToTable("ClientProjects");
                 });
 
-            modelBuilder.Entity("FellsideDigital.Data.Invoice", b =>
+            modelBuilder.Entity("FellsideDigital.Web.Data.ContactEnquiry", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Budget")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Company")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("HowHeard")
+                        .HasColumnType("text");
+
+                    b.Property<bool>("IsRead")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("Message")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Phone")
+                        .HasColumnType("text");
+
+                    b.Property<string>("ServiceType")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTimeOffset>("SubmittedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("ContactEnquiries");
+                });
+
+            modelBuilder.Entity("FellsideDigital.Web.Data.Invoice", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -326,7 +332,7 @@ namespace FellsideDigital.Web.Data.Migrations
                     b.ToTable("Invoices");
                 });
 
-            modelBuilder.Entity("FellsideDigital.Data.ProjectStatusUpdate", b =>
+            modelBuilder.Entity("FellsideDigital.Web.Data.ProjectStatusUpdate", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -490,9 +496,9 @@ namespace FellsideDigital.Web.Data.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("FellsideDigital.Data.ApplicationUser", b =>
+            modelBuilder.Entity("FellsideDigital.Web.Data.ApplicationUser", b =>
                 {
-                    b.HasOne("FellsideDigital.Data.ClientInvitation", "Invitation")
+                    b.HasOne("FellsideDigital.Web.Data.ClientInvitation", "Invitation")
                         .WithMany()
                         .HasForeignKey("InvitationId")
                         .OnDelete(DeleteBehavior.SetNull);
@@ -500,14 +506,14 @@ namespace FellsideDigital.Web.Data.Migrations
                     b.Navigation("Invitation");
                 });
 
-            modelBuilder.Entity("FellsideDigital.Data.ClientInvitation", b =>
+            modelBuilder.Entity("FellsideDigital.Web.Data.ClientInvitation", b =>
                 {
-                    b.HasOne("FellsideDigital.Data.ApplicationUser", "AcceptedUser")
+                    b.HasOne("FellsideDigital.Web.Data.ApplicationUser", "AcceptedUser")
                         .WithMany()
                         .HasForeignKey("AcceptedUserId")
                         .OnDelete(DeleteBehavior.SetNull);
 
-                    b.HasOne("FellsideDigital.Data.ApplicationUser", "CreatedBy")
+                    b.HasOne("FellsideDigital.Web.Data.ApplicationUser", "CreatedBy")
                         .WithMany()
                         .HasForeignKey("CreatedByUserId")
                         .OnDelete(DeleteBehavior.Restrict)
@@ -518,15 +524,15 @@ namespace FellsideDigital.Web.Data.Migrations
                     b.Navigation("CreatedBy");
                 });
 
-            modelBuilder.Entity("FellsideDigital.Data.ClientProject", b =>
+            modelBuilder.Entity("FellsideDigital.Web.Data.ClientProject", b =>
                 {
-                    b.HasOne("FellsideDigital.Data.ApplicationUser", "Client")
+                    b.HasOne("FellsideDigital.Web.Data.ApplicationUser", "Client")
                         .WithMany()
                         .HasForeignKey("ClientId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("FellsideDigital.Data.ApplicationUser", "CreatedByAdmin")
+                    b.HasOne("FellsideDigital.Web.Data.ApplicationUser", "CreatedByAdmin")
                         .WithMany()
                         .HasForeignKey("CreatedByAdminId")
                         .OnDelete(DeleteBehavior.Restrict)
@@ -537,9 +543,9 @@ namespace FellsideDigital.Web.Data.Migrations
                     b.Navigation("CreatedByAdmin");
                 });
 
-            modelBuilder.Entity("FellsideDigital.Data.Invoice", b =>
+            modelBuilder.Entity("FellsideDigital.Web.Data.Invoice", b =>
                 {
-                    b.HasOne("FellsideDigital.Data.ClientProject", "Project")
+                    b.HasOne("FellsideDigital.Web.Data.ClientProject", "Project")
                         .WithMany("Invoices")
                         .HasForeignKey("ProjectId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -548,15 +554,15 @@ namespace FellsideDigital.Web.Data.Migrations
                     b.Navigation("Project");
                 });
 
-            modelBuilder.Entity("FellsideDigital.Data.ProjectStatusUpdate", b =>
+            modelBuilder.Entity("FellsideDigital.Web.Data.ProjectStatusUpdate", b =>
                 {
-                    b.HasOne("FellsideDigital.Data.ApplicationUser", "CreatedByAdmin")
+                    b.HasOne("FellsideDigital.Web.Data.ApplicationUser", "CreatedByAdmin")
                         .WithMany()
                         .HasForeignKey("CreatedByAdminId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("FellsideDigital.Data.ClientProject", "Project")
+                    b.HasOne("FellsideDigital.Web.Data.ClientProject", "Project")
                         .WithMany("StatusUpdates")
                         .HasForeignKey("ProjectId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -578,7 +584,7 @@ namespace FellsideDigital.Web.Data.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
                 {
-                    b.HasOne("FellsideDigital.Data.ApplicationUser", null)
+                    b.HasOne("FellsideDigital.Web.Data.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -587,7 +593,7 @@ namespace FellsideDigital.Web.Data.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
                 {
-                    b.HasOne("FellsideDigital.Data.ApplicationUser", null)
+                    b.HasOne("FellsideDigital.Web.Data.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -602,7 +608,7 @@ namespace FellsideDigital.Web.Data.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("FellsideDigital.Data.ApplicationUser", null)
+                    b.HasOne("FellsideDigital.Web.Data.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -611,14 +617,14 @@ namespace FellsideDigital.Web.Data.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
                 {
-                    b.HasOne("FellsideDigital.Data.ApplicationUser", null)
+                    b.HasOne("FellsideDigital.Web.Data.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("FellsideDigital.Data.ClientProject", b =>
+            modelBuilder.Entity("FellsideDigital.Web.Data.ClientProject", b =>
                 {
                     b.Navigation("Invoices");
 

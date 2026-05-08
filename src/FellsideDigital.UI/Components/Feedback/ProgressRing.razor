@@ -1,0 +1,33 @@
+<div class="relative mx-auto shrink-0" style="width:@(Size)px;height:@(Size)px">
+    <svg width="@Size" height="@Size" class="-rotate-90" aria-hidden="true">
+        <circle class="portal-ring-track"
+                cx="@Fmt(Center)" cy="@Fmt(Center)" r="@Fmt(R)"
+                fill="none" stroke-width="@Stroke" />
+        <circle class="portal-ring-fill"
+                cx="@Fmt(Center)" cy="@Fmt(Center)" r="@Fmt(R)"
+                fill="none" stroke-width="@Stroke"
+                stroke-dasharray="@Fmt2(C)"
+                stroke-dashoffset="@Fmt2(Offset)" />
+    </svg>
+    <div class="absolute inset-0 flex flex-col items-center justify-center">
+        <span class="leading-none font-bold tracking-tight text-gray-900 dark:text-white"
+              style="font-size:38px">@Value<span class="text-lg font-semibold text-gray-400 dark:text-neutral-500">%</span></span>
+        <span class="mt-1.5 text-[11px] font-semibold uppercase tracking-widest text-gray-400 dark:text-neutral-500">
+            Complete
+        </span>
+    </div>
+</div>
+
+@code {
+    [Parameter] public int Value  { get; set; }
+    [Parameter] public int Size   { get; set; } = 200;
+    [Parameter] public int Stroke { get; set; } = 14;
+
+    private double R      => (Size - Stroke) / 2.0;
+    private double C      => 2 * Math.PI * R;
+    private double Center => Size / 2.0;
+    private double Offset => C * (1 - Value / 100.0);
+
+    private static string Fmt(double v)  => v.ToString("F1", System.Globalization.CultureInfo.InvariantCulture);
+    private static string Fmt2(double v) => v.ToString("F2", System.Globalization.CultureInfo.InvariantCulture);
+}

@@ -14,6 +14,9 @@ public class ClientProject
     public string? ProjectUrl { get; set; }
     public string? DeploymentNotes { get; set; }
 
+    public int Progress { get; set; } = 0;
+    public DateTime? TargetLaunchDate { get; set; }
+
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
 
