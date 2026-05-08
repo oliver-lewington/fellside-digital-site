@@ -1,5 +1,4 @@
 ﻿@using FellsideDigital.Web.Components.Account.Pages.Forms
-@using FellsideDigital.Web.Components.Navigation
 @using Microsoft.AspNetCore.Components.Authorization
 
 <AuthorizeView Context="context">
@@ -32,8 +31,8 @@
                         <p class="text-xs truncate">@context.User.FindFirst("email")?.Value</p>
                     </div>
 
-                    <NavMenuLink Href="/account/manage" Label="Your profile" />
-                    <NavMenuLink Href="/portal/settings" Label="Settings" />
+@*                     <NavMenuLink Href="/account/manage" Label="Your profile" />
+                    <NavMenuLink Href="/portal/settings" Label="Settings" /> *@
 
                     <LogoutForm ReturnUrl="@CurrentUrl" />
                 </div>

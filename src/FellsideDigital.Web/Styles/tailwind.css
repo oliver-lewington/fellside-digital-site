@@ -32,6 +32,20 @@
     --muted: #a3a3a3; /* neutral-400 */
 }
 
+/*
+  force-light / force-dark — pin a subtree to one accent regardless of page theme.
+  CSS custom props: nearest ancestor definition wins, so these override html.dark.
+*/
+.force-light {
+    --accent: #818cf8;   /* indigo-400 — always indigo */
+    --accent-hover: #a5b4fc;
+}
+
+.force-dark {
+    --accent: #fb923c;   /* orange-400 — always orange */
+    --accent-hover: #fdba74;
+}
+
 @theme inline {
     --color-accent: var(--accent);
     --color-accent-hover: var(--accent-hover);

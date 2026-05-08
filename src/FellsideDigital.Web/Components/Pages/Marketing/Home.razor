@@ -1,5 +1,4 @@
 @page "/"
-@using FellsideDigital.Web.Components.Home
 
 <PageTitle>Fellside Digital — Bespoke Websites & Intelligent Automation</PageTitle>
 
@@ -15,14 +14,10 @@
         </div>
 
         <div class="relative z-10 max-w-4xl mx-auto text-center">
-            <div class="inline-flex items-center rounded-full px-4 py-1.5 mb-10
-                        text-sm text-slate-500 dark:text-neutral-400
-                        ring-1 ring-slate-900/10 dark:ring-white/10">
-                Based in Keswick, Cumbria&nbsp;·&nbsp;Working UK-wide&nbsp;·&nbsp;
-                <a href="/contact" class="ml-1 font-semibold text-accent whitespace-nowrap">
-                    Get in touch →
-                </a>
-            </div>
+            <p class="text-xs font-semibold uppercase tracking-widest
+                       text-slate-400 dark:text-neutral-500 mb-8">
+                Based in Keswick, Cumbria&nbsp;·&nbsp;Working UK-wide
+            </p>
 
             <h1 class="text-5xl sm:text-6xl lg:text-7xl font-semibold tracking-tight text-balance
                        text-slate-900 dark:text-white">
@@ -59,23 +54,23 @@
         <div class="max-w-7xl mx-auto">
             <SectionHeader Label="What we do"
                            Heading="Two practices, one partner."
-                           Description="Premium websites and intelligent automation, both done properly — no hand-offs, no account managers." />
+                           Description="Premium websites and intelligent automation, both done properly." />
 
             <div class="mt-12 grid grid-cols-1 lg:grid-cols-2 gap-6">
 
-                <!-- Websites card -->
-                <div class="group relative rounded-2xl bg-white dark:bg-neutral-900
-                            ring-1 ring-slate-200 dark:ring-white/5
-                            hover:ring-accent/40
-                            hover:shadow-xl transition-all duration-300 overflow-hidden">
+                <!-- Websites card — force-light pins --accent to indigo for all children -->
+                <div class="card card-cool group force-light
+                            rounded-2xl bg-white dark:bg-neutral-900
+                            ring-1 ring-slate-200 dark:ring-white/5">
                     <div class="p-8 sm:p-10 flex flex-col h-full">
                         <div class="flex size-11 items-center justify-center rounded-xl
-                                    bg-accent-hover mb-6">
+                                    bg-accent/10 mb-6">
                             <svg class="size-5 text-accent" fill="none" viewBox="0 0 24 24" stroke-width="1.75" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M9 17.25v1.007a3 3 0 01-.879 2.122L7.5 21h9l-.621-.621A3 3 0 0115 18.257V17.25m6-12V15a2.25 2.25 0 01-2.25 2.25H5.25A2.25 2.25 0 013 15V5.25m18 0A2.25 2.25 0 0018.75 3H5.25A2.25 2.25 0 003 5.25m18 0H3" />
                             </svg>
                         </div>
-                        <p class="text-xs font-semibold uppercase tracking-widest text-accent mb-2">
+                        <p class="text-xs font-semibold uppercase tracking-widest
+                                  text-accent mb-2">
                             Website Design &amp; Development
                         </p>
                         <h3 class="text-2xl font-semibold text-slate-900 dark:text-neutral-100 mb-3">
@@ -109,19 +104,19 @@
                     </div>
                 </div>
 
-                <!-- Automation card -->
-                <div class="group relative rounded-2xl bg-white dark:bg-neutral-900
-                            ring-1 ring-slate-200 dark:ring-white/5
-                            hover:ring-accent/40
-                            hover:shadow-xl transition-all duration-300 overflow-hidden">
+                <!-- Automation card — force-dark pins --accent to orange for all children -->
+                <div class="card card-warm group force-dark
+                            rounded-2xl bg-white dark:bg-neutral-900
+                            ring-1 ring-slate-200 dark:ring-white/5">
                     <div class="p-8 sm:p-10 flex flex-col h-full">
                         <div class="flex size-11 items-center justify-center rounded-xl
-                                    bg-accent-hover mb-6">
+                                    bg-accent/10 mb-6">
                             <svg class="size-5 text-accent" fill="none" viewBox="0 0 24 24" stroke-width="1.75" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z" />
                             </svg>
                         </div>
-                        <p class="text-xs font-semibold uppercase tracking-widest text-accent mb-2">
+                        <p class="text-xs font-semibold uppercase tracking-widest
+                                  text-accent mb-2">
                             Intelligent Automation
                         </p>
                         <h3 class="text-2xl font-semibold text-slate-900 dark:text-neutral-100 mb-3">
@@ -260,8 +255,7 @@
             <p class="text-sm font-medium uppercase tracking-widest text-slate-400 dark:text-neutral-500">
                 Ready to get started?
             </p>
-            <h2 class="text-4xl md:text-5xl font-semibold tracking-tight text-balance
-                       text-slate-900 dark:text-white">
+            <h2 class="text-3xl md:text-4xl font-semibold tracking-tight text-balance text-slate-900 dark:text-white">
                 Whether you need a stunning website, intelligent automation, or both!
                 <span class="text-accent">Let's build something great.</span>
             </h2>

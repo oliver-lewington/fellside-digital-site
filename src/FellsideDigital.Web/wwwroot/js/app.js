@@ -78,6 +78,18 @@ window.fellsideScroll = (() => {
         });
     }
 
+    /* ---------- Card Glow (non-scroll-card .card elements) ---------- */
+
+    function initGlowCards() {
+        document.addEventListener("mousemove", e => {
+            const card = e.target.closest(".card:not(.scroll-card)");
+            if (!card) return;
+            const rect = card.getBoundingClientRect();
+            card.style.setProperty("--x", `${e.clientX - rect.left}px`);
+            card.style.setProperty("--y", `${e.clientY - rect.top}px`);
+        });
+    }
+
     /* ---------- Smooth Scroll Helper ---------- */
 
     function toOfferings() {
@@ -90,6 +102,7 @@ window.fellsideScroll = (() => {
 
     function init() {
         initCards();
+        initGlowCards();
 
         window.addEventListener("scroll", animateOnScroll);
         window.addEventListener("load", animateOnScroll);
@@ -107,6 +120,30 @@ window.fellsideScroll = (() => {
     };
 
 })();
+
+/* ---------- Mobile nav helpers (scroll-lock + Escape) ---------- */
+window.fellsideNav = {
+    lockScroll: () => {
+        document.body.style.overflow = "hidden";
+    },
+    unlockScroll: () => {
+        document.body.style.overflow = "";
+    },
+    // Registers a one-shot keydown handler; calls CloseMobileMenuFromJs on Escape.
+    watchEscape: (dotNetRef) => {
+        const handler = (e) => {
+            if (e.key === "Escape") {
+                document.removeEventListener("keydown", handler);
+                dotNetRef.invokeMethodAsync("CloseMobileMenuFromJs");
+            }
+        };
+        // Remove any previous handler before adding, preventing duplicates.
+        document.removeEventListener("keydown", window.fellsideNav._escHandler);
+        window.fellsideNav._escHandler = handler;
+        document.addEventListener("keydown", handler);
+    },
+    _escHandler: null,
+};
 
 window.fellsideTheme = {
     init() {

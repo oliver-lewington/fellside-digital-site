@@ -6,7 +6,7 @@ using FellsideDigital.Web.Services;
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Configuration;
 
-namespace FellsideDigital.Web.Components.Pages;
+namespace FellsideDigital.Web.Components.Pages.Marketing;
 
 public partial class Contact : ComponentBase
 {

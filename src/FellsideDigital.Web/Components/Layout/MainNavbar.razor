@@ -1,0 +1,180 @@
+@using FellsideDigital.UI.Components.Buttons
+@using FellsideDigital.UI.Layout
+@using FellsideDigital.Web.Components.Account.Pages.Manage
+@using Microsoft.AspNetCore.Components.Authorization
+@using Microsoft.AspNetCore.Components.Routing
+
+<nav id="site-nav"
+     class="fixed inset-x-0 top-0 z-50
+            border-b border-gray-200 dark:border-white/10
+            bg-white/80 dark:bg-gray-900/80
+            backdrop-blur-2xl backdrop-saturate-200
+            supports-[backdrop-filter]:bg-white/70
+            dark:supports-[backdrop-filter]:bg-gray-900/70">
+
+    <!-- ── Header bar ──────────────────────────────────────────────────────── -->
+    <div class="@ContainerClass">
+        <div class="flex h-16 justify-between">
+            <div class="flex align-center gap-3">
+                <!-- Logo -->
+                <NavLink href="/" class="flex items-center gap-2.5 shrink-0">
+                    <img src="/imgs/svgs/fellside-logo.svg"
+                         class="h-8 w-auto text-accent" alt="Fellside Digital Logo" />
+                    <span class="text-[15px] font-semibold text-slate-900 dark:text-white select-none min-[820px]:inline">
+                        Fellside Digital
+                    </span>
+                </NavLink>
+
+                <!-- Desktop nav links (≥820px) -->
+                <div class="hidden min-[820px]:flex min-[820px]:items-stretch min-[820px]:gap-8">
+                    <NavigationLinks Links="_navLinks"
+                              BaseClass="flex gap-8"
+                              LinkClass="inline-flex items-center px-1 pt-1 border-b-2 border-transparent text-sm font-medium text-slate-500 dark:text-neutral-400 hover:text-accent hover:border-accent/40 transition-all duration-150"
+                              ActiveClass="inline-flex items-center px-1 pt-1 border-b-2 border-accent text-sm font-medium text-slate-900 dark:text-white transition-all duration-150"
+                              Match="NavLinkMatch.All" />
+
+                    <NavigationDropdown Label="Services"
+                                 Items="_servicesLinks"
+                                 TriggerClass="px-1 text-sm font-medium text-slate-500 dark:text-neutral-400 hover:text-accent transition-colors duration-150"
+                                 ActiveTriggerClass="px-1 text-sm font-medium text-slate-900 dark:text-white transition-colors duration-150"
+                                 ItemClass="font-medium text-slate-600 dark:text-neutral-300 hover:bg-slate-50 dark:hover:bg-white/5 hover:text-accent transition-colors duration-100"
+                                 ActiveItemClass="font-semibold text-accent bg-indigo-50 dark:bg-orange-400/10" />
+                </div>
+                
+            </div>
+
+            <!-- Desktop right-side actions (≥820px) -->
+            <div class="hidden min-[820px]:flex items-center gap-3">
+                <DarkModeToggle Size="28"/>
+
+                <AuthorizeView>
+                    <Authorized>
+                        <AuthorizeView Roles="SiteAdmin">
+                            <Authorized Context="adminCtx">
+                                <PrimaryButton Href="/Admin/Invitations" OverrideDefaultStyles="true"
+                                                Class="inline-flex items-center gap-1 rounded-md px-3 py-1.5 text-xs font-semibold text-accent ring-1 ring-accent/30 hover:bg-accent/10 transition-colors">
+                                    Admin
+                                </PrimaryButton>
+                            </Authorized>
+                            <NotAuthorized Context="nonAdminCtx">
+                                @* todo: normalise this behvaiour by implementing sized buttons. *@
+                                <PrimaryButton Href="/Portal" OverrideDefaultStyles="true" 
+                                                Class="inline-flex items-center gap-1 rounded-md px-3 py-1.5 text-xs font-semibold text-accent ring-1 ring-accent/30 hover:bg-accent/10 transition-colors">
+                                    My Portal
+                                </PrimaryButton>
+                            </NotAuthorized>
+                        </AuthorizeView>
+                    </Authorized>
+                    <NotAuthorized>
+                        <PrimaryButton Href="/Account/Login" OverrideDefaultStyles="true"
+                                       Class="inline-flex items-center gap-1 rounded-md px-3 py-1.5 text-xs font-semibold text-accent ring-1 ring-accent/30 hover:bg-accent/10 transition-colors">
+                            Login
+                        </PrimaryButton>
+                    </NotAuthorized>
+                </AuthorizeView>
+                <PrimaryButton Href="/contact" OverrideDefaultStyles="true" Class="inline-flex items-center gap-1 rounded-md px-3 py-1.5 text-xs text-white font-semibold bg-accent shadow-sm hover:bg-accent/70 transition-colors">
+                    Get started
+                </PrimaryButton>
+            </div>
+
+            <!-- Mobile hamburger & darkmode toggle / X (< 820px) -->
+            <div class="min-[820px]:hidden inline-flex items-center justify-center gap-3">
+                <DarkModeToggle Size="28"/>
+                <button @onclick="ToggleMobileMenuAsync"
+                        class="size-9 rounded-lg
+                               text-slate-500 dark:text-neutral-400
+                               hover:text-accent hover:bg-slate-50 dark:hover:bg-white/5
+                               transition-colors duration-150"
+                        aria-expanded="@_mobileMenuOpen"
+                        aria-label="@(_mobileMenuOpen ? "Close menu" : "Open menu")">
+                    @if (_mobileMenuOpen)
+                    {
+                        <!-- X icon -->
+                        <svg class="size-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.75">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    }
+                    else
+                    {
+                        <!-- Hamburger icon -->
+                        <svg class="size-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.75">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
+                        </svg>
+                    }
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ── Mobile slide-down sheet (< 820px) ───────────────────────────────── -->
+    <div class="min-[820px]:hidden overflow-hidden
+                transition-[max-height,opacity] duration-[350ms] ease-[cubic-bezier(0.22,1,0.36,1)]
+                @(_mobileMenuOpen
+                    ? "max-h-[600px] opacity-100"
+                    : "max-h-0 opacity-0 pointer-events-none")
+                border-t border-gray-100 dark:border-white/5">
+
+        <div class="px-5 pt-1 pb-6">
+
+            <!-- Stacked nav links with hairline dividers -->
+            @foreach (var (label, href) in _mobileNavLinks)
+            {
+                var isActive = string.Equals(
+                    currentUrl,
+                    href.TrimStart('/'),
+                    StringComparison.OrdinalIgnoreCase)
+                    || (href == "/" && string.IsNullOrEmpty(currentUrl));
+
+                <a href="@href" @onclick="CloseMobileMenuAsync"
+                   class="flex items-center justify-between py-3.5 text-[15px] font-medium
+                          border-b border-gray-100 dark:border-white/5 last:border-0
+                          transition-colors duration-150
+                          @(isActive
+                              ? "text-accent"
+                              : "text-slate-700 dark:text-neutral-200 hover:text-accent")">
+                    @label
+                    @if (isActive)
+                    {
+                        <span class="size-1.5 rounded-full bg-accent shrink-0"></span>
+                    }
+                </a>
+            }
+
+            <!-- CTA buttons — 2-column grid -->
+            <div class="grid grid-cols-2 gap-3 mt-5">
+                <AuthorizeView>
+                    <Authorized>
+                        <AuthorizeView Roles="SiteAdmin">
+                            <Authorized Context="mobileAdminCtx">
+                                <PrimaryButton Href="/Admin/Invitations" OnClick="CloseMobileMenuAsync" Style="ButtonStyle.Outline" Class="flex items-center justify-center">
+                                    Admin
+                                </PrimaryButton>
+                            </Authorized>
+                            <NotAuthorized Context="mobileNonAdmin">
+                               <PrimaryButton Href="/Portal" OnClick="CloseMobileMenuAsync" Style="ButtonStyle.Outline" Class="flex items-center justify-center">
+                                    My Portal
+                                </PrimaryButton>
+                            </NotAuthorized>
+                        </AuthorizeView>
+                    </Authorized>
+                    <NotAuthorized>
+                        <PrimaryButton Href="/Account/Login" OnClick="CloseMobileMenuAsync" Style="ButtonStyle.Outline" Class="flex items-center justify-center">
+                            Login
+                        </PrimaryButton>
+                    </NotAuthorized>
+                </AuthorizeView>
+                <PrimaryButton Href="/contact" OnClick="CloseMobileMenuAsync" Class="flex items-center justify-center">
+                    Get started
+                </PrimaryButton>
+            </div>
+
+            <!-- Tagline eyebrow -->
+            <p class="mt-6 text-xs font-semibold uppercase tracking-widest text-center
+                      text-slate-400 dark:text-neutral-600">
+                Based in Keswick, Cumbria&nbsp;·&nbsp;Working UK-wide
+            </p>
+
+        </div>
+    </div>
+
+</nav>

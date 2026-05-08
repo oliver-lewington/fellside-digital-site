@@ -1,4 +1,4 @@
-namespace FellsideDigital.Web.Components.Home;
+namespace FellsideDigital.Web.Components.Pages.Marketing;
 
 // ─── Record types ─────────────────────────────────────────────────────────────
 

@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
 
-namespace FellsideDigital.Web.Components.Pages;
+namespace FellsideDigital.Web.Components.Pages.Marketing;
 
 public partial class Home : ComponentBase
 {

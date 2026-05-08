@@ -1,0 +1,254 @@
+@using FellsideDigital.Web.Data
+@using FellsideDigital.Domain.Enums
+
+<div class="space-y-5">
+
+    @* Page header row *@
+    <div class="flex items-end justify-between gap-4 flex-wrap">
+        <div>
+            <p class="text-xs font-semibold uppercase tracking-widest text-accent mb-1">Overview</p>
+            <h1 class="text-[28px] font-semibold tracking-tight text-gray-900 dark:text-white leading-tight">
+                Welcome back, @FirstName.
+            </h1>
+            <p class="mt-1 text-sm text-gray-400 dark:text-neutral-500">
+                Here's what's happening across your projects today, @DateTime.Now.ToString("d MMMM yyyy").
+            </p>
+        </div>
+        <NavLink href="/Portal/Projects"
+                 class="inline-flex items-center gap-2 rounded-[10px] bg-accent px-[18px] py-[10px]
+                        text-sm font-semibold text-white shadow-sm hover:opacity-90 transition-opacity shrink-0">
+            View all projects
+            <svg class="size-4" fill="none" viewBox="0 0 24 24" stroke-width="1.75" stroke="currentColor" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
+            </svg>
+        </NavLink>
+    </div>
+
+    @* 4 KPI cards *@
+    <div class="grid grid-cols-2 lg:grid-cols-4 gap-3.5">
+        <KpiCard Eyebrow="Active"
+                 Value="@ActiveCount.ToString()"
+                 Sub="Projects in progress"
+                 IconPath="M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z"
+                 Tone="blue" />
+        <KpiCard Eyebrow="Total"
+                 Value="@Projects.Count.ToString()"
+                 Sub="@TotalSub"
+                 IconPath="M2.25 12.75V12A2.25 2.25 0 014.5 9.75h15A2.25 2.25 0 0121.75 12v.75m-8.69-6.44l-2.12-2.12a1.5 1.5 0 00-1.061-.44H4.5A2.25 2.25 0 002.25 6v12a2.25 2.25 0 002.25 2.25h15A2.25 2.25 0 0021.75 18V9a2.25 2.25 0 00-2.25-2.25h-5.379a1.5 1.5 0 01-1.06-.44z"
+                 Tone="accent" />
+        <KpiCard Eyebrow="Outstanding"
+                 Value="@OutstandingStr"
+                 Sub="Awaiting payment"
+                 IconPath="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z"
+                 Tone="amber" />
+        <KpiCard Eyebrow="Paid"
+                 Value="@PaidStr"
+                 Sub="Total paid to date"
+                 IconPath="M4.5 12.75l6 6 9-13.5"
+                 Tone="emerald"
+                 TrendLabel="@PaidTrend"
+                 TrendDir="up" />
+    </div>
+
+    @* Active projects panel *@
+    <div class="rounded-2xl bg-white dark:bg-neutral-900 border border-gray-200/80 dark:border-white/10 overflow-hidden">
+        <div class="flex items-start justify-between px-5 py-[18px] border-b border-gray-100 dark:border-white/5 gap-3 flex-wrap">
+            <div>
+                <h3 class="text-base font-semibold text-gray-900 dark:text-white">Active projects</h3>
+                <p class="text-sm text-gray-400 dark:text-neutral-500 mt-0.5">
+                    Live status across everything we're building for you.
+                </p>
+            </div>
+            <NavLink href="/Portal/Projects"
+                     class="text-accent text-sm font-semibold hover:opacity-80 transition-opacity shrink-0 mt-0.5">
+                View all →
+            </NavLink>
+        </div>
+        @foreach (var p in Projects)
+        {
+            <NavLink href="@($"/Portal/Projects/{p.Id}")"
+                     class="grid grid-cols-[1fr_160px_auto_90px] gap-3.5 px-5 py-3.5 items-center
+                            border-b border-gray-50 dark:border-white/[0.04] last:border-0
+                            hover:bg-gray-50 dark:hover:bg-white/[0.02] transition-colors group">
+                <div class="min-w-0">
+                    <p class="text-sm font-medium text-gray-900 dark:text-white truncate
+                              group-hover:text-accent transition-colors">
+                        @p.Name
+                    </p>
+                    <p class="text-xs text-gray-400 dark:text-neutral-500 truncate mt-0.5">
+                        @ProjectTypeLabel(p.Type) · Started @p.CreatedAt.ToLocalTime().ToString("d MMM yyyy")
+                    </p>
+                </div>
+                <div>
+                    <div class="h-1.5 rounded-full overflow-hidden" style="background:var(--portal-track)">
+                        <div class="h-full rounded-full bg-accent transition-[width] duration-500"
+                             style="width:@(p.Progress)%"></div>
+                    </div>
+                    <p class="text-[11px] text-gray-400 dark:text-neutral-500 mt-1">@(p.Progress)%</p>
+                </div>
+                <StatusBadge CssClasses="@BadgeHelpers.ProjectStatusBadge(p.Status)"
+                             Label="@BadgeHelpers.StatusLabel(p.Status)" />
+                <p class="text-xs text-gray-400 dark:text-neutral-500 text-right truncate">
+                    @(p.TargetLaunchDate.HasValue ? "Due " + p.TargetLaunchDate.Value.ToString("d MMM") : "—")
+                </p>
+            </NavLink>
+        }
+    </div>
+
+    @* Two-column: activity + invoices *@
+    <div class="grid grid-cols-1 lg:grid-cols-[1.6fr_1fr] gap-5 items-start">
+
+        @* Activity panel *@
+        <div class="rounded-2xl bg-white dark:bg-neutral-900 border border-gray-200/80 dark:border-white/10 overflow-hidden">
+            <div class="flex items-center justify-between px-5 py-[18px] border-b border-gray-100 dark:border-white/5">
+                <h3 class="text-base font-semibold text-gray-900 dark:text-white">Recent activity</h3>
+                <NavLink href="/Portal/Projects"
+                         class="text-accent text-sm font-semibold hover:opacity-80 transition-opacity">
+                    All updates →
+                </NavLink>
+            </div>
+            @if (!Activity.Any())
+            {
+                <div class="px-5 py-8 text-center">
+                    <p class="text-sm text-gray-400 dark:text-neutral-500">No recent activity.</p>
+                </div>
+            }
+            else
+            {
+                @foreach (var (update, project) in Activity.Take(5))
+                {
+                    <div class="flex gap-3 px-5 py-3.5 border-b border-gray-50 dark:border-white/[0.04] last:border-0">
+                        <div class="flex shrink-0 size-7 items-center justify-center rounded-lg bg-accent/10 text-accent mt-0.5">
+                            <svg class="size-3.5" fill="none" viewBox="0 0 24 24" stroke-width="1.75" stroke="currentColor" aria-hidden="true">
+                                @if (update.NewStatus.HasValue)
+                                {
+                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                          d="M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z" />
+                                }
+                                else
+                                {
+                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                          d="M7.5 8.25h9m-9 3H12m-9.75 1.51c0 1.6 1.123 2.994 2.707 3.227 1.087.16 2.185.283 3.293.369V21l4.184-4.183a1.14 1.14 0 01.778-.332 48.294 48.294 0 005.83-.498c1.585-.233 2.708-1.626 2.708-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0012 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018z" />
+                                }
+                            </svg>
+                        </div>
+                        <div class="min-w-0 flex-1">
+                            <p class="text-sm text-gray-900 dark:text-white leading-snug">@update.Message</p>
+                            <p class="text-[11px] text-gray-400 dark:text-neutral-500 mt-0.5">
+                                @project.Name · @update.CreatedAt.ToLocalTime().ToString("d MMM")
+                            </p>
+                        </div>
+                    </div>
+                }
+            }
+        </div>
+
+        @* Recent invoices panel *@
+        <div class="rounded-2xl bg-white dark:bg-neutral-900 border border-gray-200/80 dark:border-white/10 overflow-hidden">
+            <div class="flex items-center justify-between px-5 py-[18px] border-b border-gray-100 dark:border-white/5">
+                <h3 class="text-base font-semibold text-gray-900 dark:text-white">Recent invoices</h3>
+                <NavLink href="/Portal/Invoices"
+                         class="text-accent text-sm font-semibold hover:opacity-80 transition-opacity">
+                    All invoices →
+                </NavLink>
+            </div>
+            @if (!RecentInvoices.Any())
+            {
+                <div class="px-5 py-8 text-center">
+                    <p class="text-sm text-gray-400 dark:text-neutral-500">No invoices yet.</p>
+                </div>
+            }
+            else
+            {
+                <table class="w-full border-collapse">
+                    <thead>
+                        <tr>
+                            <th class="text-left px-5 py-3 text-[11px] font-semibold uppercase tracking-[0.14em]
+                                       text-gray-400 dark:text-neutral-500 border-b border-gray-100 dark:border-white/5">
+                                Invoice
+                            </th>
+                            <th class="text-left px-5 py-3 text-[11px] font-semibold uppercase tracking-[0.14em]
+                                       text-gray-400 dark:text-neutral-500 border-b border-gray-100 dark:border-white/5">
+                                Amount
+                            </th>
+                            <th class="text-left px-5 py-3 text-[11px] font-semibold uppercase tracking-[0.14em]
+                                       text-gray-400 dark:text-neutral-500 border-b border-gray-100 dark:border-white/5">
+                                Status
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var inv in RecentInvoices.Take(5))
+                        {
+                            <tr class="border-b border-gray-50 dark:border-white/[0.04] last:border-0
+                                       hover:bg-gray-50 dark:hover:bg-white/[0.02] transition-colors cursor-pointer">
+                                <td class="px-5 py-3.5 font-mono text-sm text-gray-900 dark:text-white">
+                                    @inv.Title
+                                </td>
+                                <td class="px-5 py-3.5 text-sm text-gray-900 dark:text-white font-medium">
+                                    £@inv.Amount.ToString("N0")
+                                </td>
+                                <td class="px-5 py-3.5">
+                                    <StatusBadge CssClasses="@BadgeHelpers.InvoiceStatusBadge(inv.Status)"
+                                                 Label="@inv.Status.ToString()" />
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter, EditorRequired] public IReadOnlyList<ClientProject> Projects { get; set; } = [];
+    [Parameter, EditorRequired] public IReadOnlyList<Invoice>       RecentInvoices { get; set; } = [];
+    [Parameter, EditorRequired] public IReadOnlyList<(ProjectStatusUpdate Update, ClientProject Project)> Activity { get; set; } = [];
+    [Parameter]                 public string FirstName { get; set; } = "there";
+
+    private int ActiveCount => Projects.Count(p => p.Status == ProjectStatus.InProgress);
+
+    private string TotalSub
+    {
+        get
+        {
+            var sites = Projects.Count(p => p.Type == ProjectType.Website);
+            var autos = Projects.Count(p => p.Type == ProjectType.Automation);
+            var parts = new global::System.Collections.Generic.List<string>();
+            if (sites > 0) parts.Add($"{sites} site{(sites == 1 ? "" : "s")}");
+            if (autos > 0) parts.Add($"{autos} automation{(autos == 1 ? "" : "s")}");
+            return parts.Count > 0 ? string.Join(" · ", parts) : "All projects";
+        }
+    }
+
+    private decimal OutstandingTotal => RecentInvoices
+        .Where(i => i.Status is InvoiceStatus.Sent or InvoiceStatus.Overdue)
+        .Sum(i => i.Amount);
+
+    private string OutstandingStr => $"£{OutstandingTotal:N0}";
+
+    private decimal PaidTotal => RecentInvoices
+        .Where(i => i.Status == InvoiceStatus.Paid)
+        .Sum(i => i.Amount);
+
+    private string PaidStr => $"£{PaidTotal:N0}";
+
+    private string PaidTrend
+    {
+        get
+        {
+            var ytd = RecentInvoices
+                .Where(i => i.Status == InvoiceStatus.Paid && i.PaidAt?.Year == DateTime.UtcNow.Year)
+                .Sum(i => i.Amount);
+            return ytd > 0 ? $"+£{ytd:N0}" : "";
+        }
+    }
+
+    private static string ProjectTypeLabel(ProjectType type) => type switch
+    {
+        ProjectType.Website    => "Marketing website",
+        ProjectType.Automation => "Automation",
+        _                      => type.ToString(),
+    };
+}
