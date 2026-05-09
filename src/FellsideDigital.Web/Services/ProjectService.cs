@@ -22,6 +22,7 @@ public class ProjectService(FellsideDigitalDbContext db) : IProjectService
             .Include(p => p.Invoices)
             .Include(p => p.StatusUpdates.OrderByDescending(u => u.CreatedAt))
                 .ThenInclude(u => u.CreatedByAdmin)
+            .Include(p => p.PlanPhases.OrderBy(ph => ph.Order))
             .FirstOrDefaultAsync(p => p.Id == id);
 
     public async Task<List<ClientProject>> GetAllAsync()
@@ -88,4 +89,25 @@ public class ProjectService(FellsideDigitalDbContext db) : IProjectService
             .Where(u => u.ProjectId == projectId)
             .OrderByDescending(u => u.CreatedAt)
             .ToListAsync();
+
+    public async Task SavePhasesAsync(Guid projectId, List<ProjectPlanPhase> phases)
+    {
+        var existing = await db.ProjectPlanPhases
+            .Where(ph => ph.ProjectId == projectId)
+            .ToListAsync();
+
+        db.ProjectPlanPhases.RemoveRange(existing);
+
+        for (int i = 0; i < phases.Count; i++)
+        {
+            phases[i].Id = Guid.NewGuid();
+            phases[i].ProjectId = projectId;
+            phases[i].Order = i + 1;
+            phases[i].CreatedAt = DateTime.UtcNow;
+            phases[i].UpdatedAt = DateTime.UtcNow;
+        }
+
+        db.ProjectPlanPhases.AddRange(phases);
+        await db.SaveChangesAsync();
+    }
 }

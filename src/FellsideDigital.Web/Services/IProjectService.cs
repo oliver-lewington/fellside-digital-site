@@ -13,4 +13,5 @@ public interface IProjectService
     Task DeleteAsync(Guid id);
     Task AddStatusUpdateAsync(Guid projectId, string message, ProjectStatus? newStatus, string adminId);
     Task<List<ProjectStatusUpdate>> GetStatusUpdatesAsync(Guid projectId);
+    Task SavePhasesAsync(Guid projectId, List<ProjectPlanPhase> phases);
 }
