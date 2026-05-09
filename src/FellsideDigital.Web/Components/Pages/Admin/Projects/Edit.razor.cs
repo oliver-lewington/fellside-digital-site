@@ -111,7 +111,9 @@ public partial class Edit : ComponentBase
 
             await ProjectService.UpdateAsync(_project);
 
-            var phases = _phases.Select(p => new ProjectPlanPhase
+            var phases = _phases
+                .Where(p => !string.IsNullOrWhiteSpace(p.Title) && !string.IsNullOrWhiteSpace(p.ShortLabel))
+                .Select(p => new ProjectPlanPhase
             {
                 Title = p.Title.Trim(),
                 ShortLabel = p.ShortLabel.Trim(),

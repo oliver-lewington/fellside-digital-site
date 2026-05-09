@@ -97,9 +97,13 @@ public partial class Create : ComponentBase
 
             await ProjectService.CreateAsync(project, admin.Id);
 
-            if (_phases.Count > 0)
+            var validPhases = _phases
+                .Where(p => !string.IsNullOrWhiteSpace(p.Title) && !string.IsNullOrWhiteSpace(p.ShortLabel))
+                .ToList();
+
+            if (validPhases.Count > 0)
             {
-                var phases = _phases.Select(p => new ProjectPlanPhase
+                var phases = validPhases.Select(p => new ProjectPlanPhase
                 {
                     Title = p.Title.Trim(),
                     ShortLabel = p.ShortLabel.Trim(),
